@@ -51,16 +51,16 @@ jsdom.env(
 
     test('should return cells with a background but no foreground', (t) => {
       const actual = DOM.readState().every(col => (
-        col.every(cell => cell.background && !cell.foreground)
+        col.every(cell => typeof cell.foreground === 'string' && cell.background == null)
       ));
       const expected = true;
 
       t.is(actual, expected);
     });
 
-    test('should return cells with background being their initial color', (t) => {
+    test('should return cells with foreground being their initial color', (t) => {
       // note: testing only a subset here because testing the whole graph would painful
-      const actual = DOM.readState().slice(0, 4).map(col => col.map(cell => cell.background));
+      const actual = DOM.readState().slice(0, 4).map(col => col.map(cell => cell.foreground));
       const expected = [
         [
           '#c6e48b',

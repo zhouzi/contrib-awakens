@@ -10,8 +10,8 @@ function getDOMGrid() {
 
 function readState() {
   return getDOMGrid().map(cells => cells.map((cell) => {
-    const foreground = cell.getAttribute('data-foreground');
-    const background = cell.getAttribute('data-background') || cell.getAttribute('fill');
+    const foreground = cell.getAttribute('data-foreground') || cell.getAttribute('fill');
+    const background = cell.getAttribute('data-background');
 
     return {
       foreground,
