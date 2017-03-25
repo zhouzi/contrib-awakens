@@ -126,5 +126,7 @@ jsdom.env(
 
       t.is(actual, expected);
     });
+
+    test.todo('reduce');
   },
 );
