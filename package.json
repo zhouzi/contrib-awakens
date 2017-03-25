@@ -12,7 +12,8 @@
     "babel": "inherit"
   },
   "dependencies": {
-    "lodash": "^4.17.4"
+    "lodash": "^4.17.4",
+    "seamless-immutable": "^7.1.1"
   },
   "devDependencies": {
     "ava": "^0.18.2",

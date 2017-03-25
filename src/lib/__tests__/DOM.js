@@ -1,12 +1,11 @@
-const fs = require('fs');
-const path = require('path');
 const test = require('ava');
 const jsdom = require('jsdom');
 const _ = require('lodash');
 const DOM = require('../DOM').default;
+const fixtures = require('./fixtures');
 
 jsdom.env(
-  fs.readFileSync(path.join(__dirname, './graph.html'), 'utf8'),
+  fixtures.getHtml(),
   (err, window) => {
     if (err) {
       throw err;
@@ -101,6 +100,101 @@ jsdom.env(
       ];
 
       t.deepEqual(actual, expected);
+    });
+
+    test('should render a cell color', (t) => {
+      DOM.render([
+        [
+          {
+            foreground: 'red',
+            background: null,
+          },
+        ],
+      ]);
+
+      const actual = fixtures.getCellColor(0, 0);
+      const expected = 'red';
+
+      t.is(actual, expected);
+    });
+
+    test('should render the cell color with background when foreground is missing', (t) => {
+      DOM.render([
+        [
+          {
+            foreground: null,
+            background: 'red',
+          },
+        ],
+      ]);
+
+      const actual = fixtures.getCellColor(0, 0);
+      const expected = 'red';
+
+      t.is(actual, expected);
+    });
+
+    test('should render the cell color foreground in priority', (t) => {
+      DOM.render([
+        [
+          {
+            foreground: 'red',
+            background: 'yellow',
+          },
+        ],
+      ]);
+
+      const actual = fixtures.getCellColor(0, 0);
+      const expected = 'red';
+
+      t.is(actual, expected);
+    });
+
+    test('should render several cells color', (t) => {
+      DOM.render([
+        [
+          {
+            foreground: 'blue',
+            background: null,
+          },
+          {
+            foreground: null,
+            background: 'white',
+          },
+          {
+            foreground: 'red',
+            background: 'yellow',
+          },
+        ],
+      ]);
+
+      const actual = [
+        fixtures.getCellColor(0, 0),
+        fixtures.getCellColor(0, 1),
+        fixtures.getCellColor(0, 2),
+      ];
+      const expected = [
+        'blue',
+        'white',
+        'red',
+      ];
+
+      t.deepEqual(actual, expected);
+    });
+
+    test('should return the state as passed in when calling render', (t) => {
+      const state = [
+        [
+          {
+            foreground: 'red',
+            background: null,
+          },
+        ],
+      ];
+      const actual = DOM.render(state);
+      const expected = state;
+
+      t.is(actual, expected);
     });
   },
 );
