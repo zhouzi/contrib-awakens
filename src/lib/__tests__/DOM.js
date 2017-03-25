@@ -113,7 +113,7 @@ jsdom.env(
         ],
       ]);
 
-      const actual = fixtures.getCellColor(0, 0);
+      const actual = fixtures.getCellColor([0, 0]);
       const expected = 'red';
 
       t.is(actual, expected);
@@ -129,7 +129,7 @@ jsdom.env(
         ],
       ]);
 
-      const actual = fixtures.getCellColor(0, 0);
+      const actual = fixtures.getCellColor([0, 0]);
       const expected = 'red';
 
       t.is(actual, expected);
@@ -145,7 +145,7 @@ jsdom.env(
         ],
       ]);
 
-      const actual = fixtures.getCellColor(0, 0);
+      const actual = fixtures.getCellColor([0, 0]);
       const expected = 'red';
 
       t.is(actual, expected);
@@ -170,9 +170,9 @@ jsdom.env(
       ]);
 
       const actual = [
-        fixtures.getCellColor(0, 0),
-        fixtures.getCellColor(0, 1),
-        fixtures.getCellColor(0, 2),
+        fixtures.getCellColor([0, 0]),
+        fixtures.getCellColor([0, 1]),
+        fixtures.getCellColor([0, 2]),
       ];
       const expected = [
         'blue',
@@ -227,7 +227,7 @@ jsdom.env(
         ],
       ]);
 
-      const actual = fixtures.getCellColor(0, 0);
+      const actual = fixtures.getCellColor([0, 0]);
       const expected = colors.EMPTY;
 
       t.is(actual, expected);

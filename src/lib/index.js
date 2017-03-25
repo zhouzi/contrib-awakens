@@ -9,31 +9,31 @@ function range(min, max) {
   return times((max - min) + 1, i => min + i);
 }
 
-function coordsRange(x1, x2, y1, y2) {
+function coordsRange([x1, x2], [y1, y2]) {
   return flatten(range(x1, x2).map(x => range(y1, y2).map(y => [x, y])));
 }
 
 function reduceRange(state, [x1, x2], [y1, y2], fn) {
-  return coordsRange(x1, x2, y1, y2).reduce(fn, state);
+  return coordsRange([x1, x2], [y1, y2]).reduce(fn, state);
 }
 
 export function reduce(state, fn) {
   return reduceRange(state, [0, state.length - 1], [0, state[0].length - 1], fn);
 }
 
-export function updateCell(state, x, y, props) {
+export function updateCell(state, [x, y], props) {
   const update = isFunction(props) ? props : obj => obj.merge(props);
   return state.update(x, col => col.set(y, update(col[y], x, y)));
 }
 
 export function updateCells(state, [x1, x2], [y1, y2], props) {
-  return reduceRange(state, [x1, x2], [y1, y2], (acc, [x, y]) => updateCell(acc, x, y, props));
+  return reduceRange(state, [x1, x2], [y1, y2], (acc, [x, y]) => updateCell(acc, [x, y], props));
 }
 
-export function moveCell(state, fromX, fromY, toX, toY) {
-  return updateCell(updateCell(state, toX, toY, {
+export function moveCell(state, [fromX, fromY], [toX, toY]) {
+  return updateCell(updateCell(state, [toX, toY], {
     foreground: state[fromX][fromY].foreground,
-  }), fromX, fromY, {
+  }), [fromX, fromY], {
     foreground: null,
   });
 }

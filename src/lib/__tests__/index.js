@@ -25,11 +25,11 @@ jsdom.env(
       const y = 0;
       const color = 'red';
 
-      getState().updateCell(x, y, {
+      getState().updateCell([x, y], {
         foreground: color,
       }).render();
 
-      const actual = fixtures.getCellColor(x, y);
+      const actual = fixtures.getCellColor([x, y]);
       const expected = color;
 
       t.is(actual, expected);
@@ -40,18 +40,18 @@ jsdom.env(
       const y = 0;
       const color = 'yellow';
 
-      getState().updateCell(x, y, {
+      getState().updateCell([x, y], {
         foreground: color,
       }).render();
 
-      const actual = fixtures.getCellColor(x, y);
+      const actual = fixtures.getCellColor([x, y]);
       const expected = color;
 
       t.is(actual, expected);
     });
 
     test('should return the api when calling a method', (t) => {
-      const actual = _.keys(getState().updateCell(0, 0, {
+      const actual = _.keys(getState().updateCell([0, 0], {
         foreground: 'red',
       }));
       const expected = _.keys(getState());
@@ -61,29 +61,29 @@ jsdom.env(
 
     test('should move a cell to another position', (t) => {
       getState()
-        .updateCell(0, 0, {
+        .updateCell([0, 0], {
           foreground: 'red',
         })
-        .moveCell(0, 0, 0, 1)
+        .moveCell([0, 0], [0, 1])
         .render();
 
-      const actual = fixtures.getCellColor(0, 1);
+      const actual = fixtures.getCellColor([0, 1]);
       const expected = 'red';
 
       t.is(actual, expected);
     });
 
     test('should restore the cell background when it has moved', (t) => {
-      const originalColor = fixtures.getCellColor(0, 0);
+      const originalColor = fixtures.getCellColor([0, 0]);
 
       getState()
-        .updateCell(0, 0, {
+        .updateCell([0, 0], {
           foreground: 'red',
         })
-        .moveCell(0, 0, 0, 1)
+        .moveCell([0, 0], [0, 1])
         .render();
 
-      const actual = fixtures.getCellColor(0, 0);
+      const actual = fixtures.getCellColor([0, 0]);
       const expected = originalColor;
 
       t.is(actual, expected);
@@ -95,13 +95,13 @@ jsdom.env(
       }).render();
 
       const actual = [
-        fixtures.getCellColor(0, 0),
-        fixtures.getCellColor(0, 1),
-        fixtures.getCellColor(0, 2),
-        fixtures.getCellColor(0, 3),
-        fixtures.getCellColor(0, 4),
-        fixtures.getCellColor(0, 5),
-        fixtures.getCellColor(0, 6),
+        fixtures.getCellColor([0, 0]),
+        fixtures.getCellColor([0, 1]),
+        fixtures.getCellColor([0, 2]),
+        fixtures.getCellColor([0, 3]),
+        fixtures.getCellColor([0, 4]),
+        fixtures.getCellColor([0, 5]),
+        fixtures.getCellColor([0, 6]),
       ];
       const expected = [
         'red',
@@ -117,11 +117,11 @@ jsdom.env(
     });
 
     test('should accept a function as updater', (t) => {
-      getState().updateCell(2, 6, (cell, x, y) => cell.merge({
+      getState().updateCell([2, 6], (cell, x, y) => cell.merge({
         foreground: `${x}-${y}`,
       })).render();
 
-      const actual = fixtures.getCellColor(2, 6);
+      const actual = fixtures.getCellColor([2, 6]);
       const expected = '2-6';
 
       t.is(actual, expected);
