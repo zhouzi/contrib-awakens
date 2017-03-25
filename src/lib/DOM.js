@@ -8,19 +8,26 @@ function getDOMGrid() {
 }
 
 function readState() {
-  return getDOMGrid().map(cells => cells.map(cell => ({
-    foreground: null,
-    background: cell.getAttribute('fill'),
-  })));
+  return getDOMGrid().map(cells => cells.map((cell) => {
+    const foreground = cell.getAttribute('data-foreground');
+    const background = cell.getAttribute('data-background') || cell.getAttribute('fill');
+
+    return {
+      foreground,
+      background,
+    };
+  }));
 }
 
 function render(state) {
   const DOMGrid = getDOMGrid();
 
   state.forEach((col, x) => {
-    col.forEach((cell, y) => {
-      const color = cell.foreground || cell.background;
-      DOMGrid[x][y].setAttribute('fill', color);
+    col.forEach(({ foreground, background }, y) => {
+      const cell = DOMGrid[x][y];
+      cell.setAttribute('data-foreground', foreground);
+      cell.setAttribute('data-background', background);
+      cell.setAttribute('fill', foreground || background);
     });
   });
 

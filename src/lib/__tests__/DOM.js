@@ -196,5 +196,24 @@ jsdom.env(
 
       t.is(actual, expected);
     });
+
+    test('should read state without losing foreground/background data', (t) => {
+      DOM.render([
+        [
+          {
+            foreground: 'red',
+            background: 'yellow',
+          },
+        ],
+      ]);
+
+      const actual = DOM.readState()[0][0];
+      const expected = {
+        foreground: 'red',
+        background: 'yellow',
+      };
+
+      t.deepEqual(actual, expected);
+    });
   },
 );
