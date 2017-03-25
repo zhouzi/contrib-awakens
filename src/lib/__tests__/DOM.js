@@ -2,6 +2,7 @@ const test = require('ava');
 const jsdom = require('jsdom');
 const _ = require('lodash');
 const DOM = require('../DOM').default;
+const colors = require('../colors.json');
 const fixtures = require('./fixtures');
 
 jsdom.env(
@@ -214,6 +215,22 @@ jsdom.env(
       };
 
       t.deepEqual(actual, expected);
+    });
+
+    test('should use empty color when no foreground and background is provided', (t) => {
+      DOM.render([
+        [
+          {
+            foreground: null,
+            background: null,
+          },
+        ],
+      ]);
+
+      const actual = fixtures.getCellColor(0, 0);
+      const expected = colors.EMPTY;
+
+      t.is(actual, expected);
     });
   },
 );
