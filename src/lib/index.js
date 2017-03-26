@@ -31,6 +31,10 @@ export function updateCells(state, [x1, x2], [y1, y2], props) {
 }
 
 export function moveCell(state, [fromX, fromY], [toX, toY]) {
+  if (state[toX][toY].foreground) {
+    return state;
+  }
+
   return updateCell(updateCell(state, [toX, toY], {
     foreground: state[fromX][fromY].foreground,
   }), [fromX, fromY], {

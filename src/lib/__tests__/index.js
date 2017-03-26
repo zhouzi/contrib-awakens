@@ -62,10 +62,29 @@ jsdom.env(
       t.deepEqual(actual, expected);
     });
 
+    test('should not be able to move over a cell that has a foreground', (t) => {
+      const originalColor = fixtures.getCellColor([0, 1]);
+
+      getState()
+        .updateCell([0, 0], {
+          foreground: 'red',
+        })
+        .moveCell([0, 0], [0, 1])
+        .render();
+
+      const actual = fixtures.getCellColor([0, 1]);
+      const expected = originalColor;
+
+      t.is(actual, expected);
+    });
+
     test('should move a cell to another position', (t) => {
       getState()
         .updateCell([0, 0], {
           foreground: 'red',
+        })
+        .updateCell([0, 1], {
+          foreground: null,
         })
         .moveCell([0, 0], [0, 1])
         .render();
@@ -80,6 +99,9 @@ jsdom.env(
       getState()
         .updateCell([0, 0], {
           foreground: 'red',
+        })
+        .updateCell([0, 1], {
+          foreground: null,
         })
         .moveCell([0, 0], [0, 1])
         .render();
