@@ -2,16 +2,19 @@ const _ = require('lodash');
 const test = require('ava');
 const jsdom = require('jsdom');
 const getState = require('../').default;
+const colors = require('../colors.json');
 const fixtures = require('./fixtures');
 
 jsdom.env(
-  fixtures.getHtml(),
+  '',
   (err, window) => {
     if (err) {
       throw err;
     }
 
     global.window = window;
+
+    test.beforeEach(() => fixtures.resetHtml());
 
     test('should return an updateCell function', (t) => {
       const actual = typeof getState().updateCell;
@@ -73,9 +76,7 @@ jsdom.env(
       t.is(actual, expected);
     });
 
-    test('should restore the cell background when it has moved', (t) => {
-      const originalColor = fixtures.getCellColor([0, 0]);
-
+    test('should remove foreground when the cell has moved', (t) => {
       getState()
         .updateCell([0, 0], {
           foreground: 'red',
@@ -84,7 +85,7 @@ jsdom.env(
         .render();
 
       const actual = fixtures.getCellColor([0, 0]);
-      const expected = originalColor;
+      const expected = colors.EMPTY;
 
       t.is(actual, expected);
     });

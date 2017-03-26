@@ -6,13 +6,15 @@ const colors = require('../colors.json');
 const fixtures = require('./fixtures');
 
 jsdom.env(
-  fixtures.getHtml(),
+  '',
   (err, window) => {
     if (err) {
       throw err;
     }
 
     global.window = window;
+
+    test.beforeEach(() => fixtures.resetHtml());
 
     test('should return a list', (t) => {
       const actual = Object.prototype.toString.call(DOM.readState());
