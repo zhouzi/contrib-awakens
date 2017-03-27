@@ -63,4 +63,9 @@ function getState() {
   return fromState(state);
 }
 
+export const bounds = {
+  x: 52,
+  y: 6,
+};
+
 export default getState;
