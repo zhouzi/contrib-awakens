@@ -3,12 +3,49 @@
 import toArray from 'lodash/toArray';
 import colors from './colors.json';
 
-function getDOMGrid() {
+function getCols() {
   const graph = window.document.querySelector('.js-calendar-graph-svg');
-  return toArray(graph.querySelector('g').querySelectorAll('g')).map(col => toArray(col.children));
+  return toArray(graph.querySelector('g').querySelectorAll('g'));
+}
+
+function getDOMGrid() {
+  return getCols().map(col => toArray(col.children));
+}
+
+function createClone(cell) {
+  const clone = cell.cloneNode();
+  clone.setAttribute('fill', colors.EMPTY);
+  return clone;
+}
+
+function addMissingDOMCells() {
+  const cols = getCols();
+  const length = cols[0].children.length;
+
+  cols
+    .forEach((col) => {
+      const cells = col.children;
+
+      if (cells.length === length) {
+        return;
+      }
+
+      const firstCellY = Number(cells[0].getAttribute('y'));
+      const secondCellY = Number(cells[1].getAttribute('y'));
+      const yIncrement = secondCellY - firstCellY;
+      const exampleCell = cells[0];
+
+      for (let i = cells.length; i < length; i++) {
+        const clone = createClone(exampleCell);
+        clone.setAttribute('y', String(yIncrement * i));
+        col.appendChild(clone);
+      }
+    });
 }
 
 function readState() {
+  addMissingDOMCells();
+
   return getDOMGrid().map(cells => cells.map((cell) => {
     const foreground = cell.getAttribute('data-foreground') || cell.getAttribute('fill');
     const background = cell.getAttribute('data-background');

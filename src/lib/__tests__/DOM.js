@@ -37,16 +37,12 @@ jsdom.env(
       t.is(actual, expected);
     });
 
-    test('should return columns with 7 cells except for the last one', (t) => {
-      const actual = _.initial(DOM.readState()).every(col => col.length === 7);
+    test('should return columns with the exact same number of cells', (t) => {
+      const state = DOM.readState();
+      const length = state[0].length;
+
+      const actual = state.every(col => col.length === length);
       const expected = true;
-
-      t.is(actual, expected);
-    });
-
-    test('should return a last column with 5 elements', (t) => {
-      const actual = _.last(DOM.readState()).length;
-      const expected = 5;
 
       t.is(actual, expected);
     });
