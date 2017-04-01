@@ -1,6 +1,7 @@
 const test = require('ava');
 const { Car, Ship } = require('./fixtures');
 const getInitialState = require('../index').default;
+const { getShapeMeta } = require('../Shape');
 const position = require('../position').default;
 
 test('should expose a function', (t) => {
@@ -10,18 +11,19 @@ test('should expose a function', (t) => {
   t.is(actual, expected);
 });
 
-test('should position an object', (t) => {
+test('should position a shape', (t) => {
   const car = Car();
+  const { id, name } = getShapeMeta(car);
   const actual = position(getInitialState(), car, [0, 0]);
   const expected = {
     '0.0': {
-      id: car.id,
-      name: car.name,
+      id,
+      name,
       color: 'red',
     },
     '1.0': {
-      id: car.id,
-      name: car.name,
+      id,
+      name,
       color: 'red',
     },
   };
@@ -29,23 +31,24 @@ test('should position an object', (t) => {
   t.deepEqual(actual, expected);
 });
 
-test('should position a different object', (t) => {
+test('should position a different shape', (t) => {
   const ship = Ship();
+  const { id, name } = getShapeMeta(ship);
   const actual = position(getInitialState(), ship, [0, 0]);
   const expected = {
     '0.0': {
-      id: ship.id,
-      name: ship.name,
+      id,
+      name,
       color: 'red',
     },
     '1.0': {
-      id: ship.id,
-      name: ship.name,
+      id,
+      name,
       color: 'blue',
     },
     '2.0': {
-      id: ship.id,
-      name: ship.name,
+      id,
+      name,
       color: 'red',
     },
   };
@@ -53,18 +56,19 @@ test('should position a different object', (t) => {
   t.deepEqual(actual, expected);
 });
 
-test('should position an object at a different position', (t) => {
+test('should position a shape at a different position', (t) => {
   const car = Car();
+  const { id, name } = getShapeMeta(car);
   const actual = position(getInitialState(), car, [2, 1]);
   const expected = {
     2.1: {
-      id: car.id,
-      name: car.name,
+      id,
+      name,
       color: 'red',
     },
     3.1: {
-      id: car.id,
-      name: car.name,
+      id,
+      name,
       color: 'red',
     },
   };
@@ -72,34 +76,36 @@ test('should position an object at a different position', (t) => {
   t.deepEqual(actual, expected);
 });
 
-test('should position several objects', (t) => {
+test('should position several shapes', (t) => {
   const car = Car();
+  const { id: carId, name: carName } = getShapeMeta(car);
   const ship = Ship();
+  const { id: shipId, name: shipName } = getShapeMeta(ship);
   const actual = position(position(getInitialState(), car, [0, 0]), ship, [0, 1]);
   const expected = {
     '0.0': {
-      id: car.id,
-      name: car.name,
+      id: carId,
+      name: carName,
       color: 'red',
     },
     '1.0': {
-      id: car.id,
-      name: car.name,
+      id: carId,
+      name: carName,
       color: 'red',
     },
     0.1: {
-      id: ship.id,
-      name: ship.name,
+      id: shipId,
+      name: shipName,
       color: 'red',
     },
     1.1: {
-      id: ship.id,
-      name: ship.name,
+      id: shipId,
+      name: shipName,
       color: 'blue',
     },
     2.1: {
-      id: ship.id,
-      name: ship.name,
+      id: shipId,
+      name: shipName,
       color: 'red',
     },
   };

@@ -1,5 +1,8 @@
 import uniqueId from 'lodash/uniqueId';
 import assign from 'lodash/assign';
+import head from 'lodash/head';
+import keys from 'lodash/keys';
+import pick from 'lodash/pick';
 
 function getNonEmptyCells(cells) {
   return cells
@@ -7,9 +10,18 @@ function getNonEmptyCells(cells) {
     .filter(({ color }) => color != null);
 }
 
+export function getShapeMeta(shape) {
+  const key = head(keys(shape));
+  const point = shape[key];
+  return pick(point, [
+    'id',
+    'name',
+  ]);
+}
+
 export default function Shape(name, shape) {
   const id = uniqueId(`${name}-`);
-  const points = shape
+  return shape
     .map((cells, y) => (
       getNonEmptyCells(cells)
         .reduce((acc, { color, x }) => assign(acc, {
@@ -21,10 +33,4 @@ export default function Shape(name, shape) {
         }), {})
     ))
     .reduce((acc, cells) => assign(acc, cells), {});
-
-  return {
-    id,
-    name,
-    points,
-  };
 }

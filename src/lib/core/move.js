@@ -3,16 +3,17 @@ import omitBy from 'lodash/omitBy';
 import keys from 'lodash/keys';
 import has from 'lodash/has';
 import identity from 'lodash/identity';
-import position, { getNewPointsPosition } from './position';
+import { getShapeMeta } from './Shape';
+import position, { getShapeNewPosition } from './position';
 
-function removeObject(state, id) {
+function removeShape(state, id) {
   return omitBy(state, point => point.id === id);
 }
 
-function getCollidingObjects(state, currentPoints, [x, y]) {
-  const newPoints = getNewPointsPosition(currentPoints, [x, y]);
+function getCollidingPoints(state, currentShape, [futureX, futureY]) {
+  const futureShape = getShapeNewPosition(currentShape, [futureX, futureY]);
 
-  return keys(newPoints)
+  return keys(futureShape)
     .map((coords) => {
       if (has(state, coords)) {
         return state[coords];
@@ -23,20 +24,19 @@ function getCollidingObjects(state, currentPoints, [x, y]) {
     .filter(identity);
 }
 
-export default function move(state, { id }, [incrementX, incrementY], callback = identity) {
-  const objectCurrentPointsPosition = pickBy(state, obj => obj.id === id);
-  const stateWithoutObject = removeObject(state, id);
-  const collidingObjects = getCollidingObjects(
-    stateWithoutObject,
-    objectCurrentPointsPosition,
+export default function move(state, shape, [incrementX, incrementY], callback = identity) {
+  const { id } = getShapeMeta(shape);
+  const currentShape = pickBy(state, point => point.id === id);
+  const stateWithoutShape = removeShape(state, id);
+  const collidingPoints = getCollidingPoints(
+    stateWithoutShape,
+    currentShape,
     [incrementX, incrementY],
   );
 
-  if (collidingObjects.length) {
-    return callback(state, collidingObjects);
+  if (collidingPoints.length) {
+    return callback(state, collidingPoints);
   }
 
-  return position(stateWithoutObject, {
-    points: objectCurrentPointsPosition,
-  }, [incrementX, incrementY]);
+  return position(stateWithoutShape, currentShape, [incrementX, incrementY]);
 }

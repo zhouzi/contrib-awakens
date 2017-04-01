@@ -1,6 +1,7 @@
 const test = require('ava');
 const { Car, Ship } = require('./fixtures');
 const Shape = require('../Shape').default;
+const { getShapeMeta } = require('../Shape');
 
 function Plane() {
   return Shape('plane', [
@@ -17,37 +18,38 @@ test('should expose a function', (t) => {
   t.is(actual, expected);
 });
 
-test('should create an object with a name', (t) => {
-  const actual = Car().name;
+test('should create a shape with a name', (t) => {
+  const actual = getShapeMeta(Car()).name;
   const expected = 'car';
 
   t.is(actual, expected);
 });
 
-test('should create an object with a different name', (t) => {
-  const actual = Ship().name;
+test('should create a shape with a different name', (t) => {
+  const actual = getShapeMeta(Ship()).name;
   const expected = 'ship';
 
   t.is(actual, expected);
 });
 
-test('should create an object with an id', (t) => {
-  const actual = typeof Car().id;
+test('should create a shape with an id', (t) => {
+  const actual = typeof getShapeMeta(Car()).id;
   const expected = 'string';
 
   t.is(actual, expected);
 });
 
 test('should generate unique ids', (t) => {
-  const actual = Car().id !== Car().id;
+  const actual = getShapeMeta(Car()).id !== getShapeMeta(Car()).id;
   const expected = true;
 
   t.is(actual, expected);
 });
 
 test('should contain a mapping of the points', (t) => {
-  const { id, name, points } = Car();
-  const actual = points;
+  const car = Car();
+  const { id, name } = getShapeMeta(car);
+  const actual = car;
   const expected = {
     '0.0': {
       id,
@@ -65,8 +67,9 @@ test('should contain a mapping of the points', (t) => {
 });
 
 test('should contain a different mapping', (t) => {
-  const { id, name, points } = Ship();
-  const actual = points;
+  const ship = Ship();
+  const { id, name } = getShapeMeta(ship);
+  const actual = ship;
   const expected = {
     '0.0': {
       id,
@@ -89,8 +92,9 @@ test('should contain a different mapping', (t) => {
 });
 
 test('should ignore null values', (t) => {
-  const { id, name, points } = Plane();
-  const actual = points;
+  const plane = Plane();
+  const { id, name } = getShapeMeta(plane);
+  const actual = plane;
   const expected = {
     '1.0': {
       id,

@@ -2,11 +2,12 @@ const _ = require('lodash');
 const test = require('ava');
 const getInitialState = require('../index').default;
 const position = require('../position').default;
+const { getShapeMeta } = require('../Shape');
 const { Car, Ship } = require('./fixtures');
 const move = require('../move').default;
 
-function moveObject(object, [incrementX, incrementY]) {
-  return move(position(getInitialState(), object, [0, 0]), object, [incrementX, incrementY]);
+function moveShape(shape, [incrementX, incrementY]) {
+  return move(position(getInitialState(), shape, [0, 0]), shape, [incrementX, incrementY]);
 }
 
 function positionCarAndShip(car, ship, [carX, carY] = [0, 0], [shipX, shipY] = [2, 0]) {
@@ -20,22 +21,23 @@ test('should expose a function', (t) => {
   t.is(actual, expected);
 });
 
-test('should move an object', (t) => {
+test('should move a shape', (t) => {
   const car = Car();
-  const state = moveObject(car, [1, 0]);
+  const { id, name } = getShapeMeta(car);
+  const state = moveShape(car, [1, 0]);
   const actual = [
     state['1.0'],
     state['2.0'],
   ];
   const expected = [
     {
-      id: car.id,
-      name: car.name,
+      id,
+      name,
       color: 'red',
     },
     {
-      id: car.id,
-      name: car.name,
+      id,
+      name,
       color: 'red',
     },
   ];
@@ -43,22 +45,23 @@ test('should move an object', (t) => {
   t.deepEqual(actual, expected);
 });
 
-test('should move an object further', (t) => {
+test('should move a shape further', (t) => {
   const car = Car();
-  const state = moveObject(car, [3, 0]);
+  const { id, name } = getShapeMeta(car);
+  const state = moveShape(car, [3, 0]);
   const actual = [
     state['3.0'],
     state['4.0'],
   ];
   const expected = [
     {
-      id: car.id,
-      name: car.name,
+      id,
+      name,
       color: 'red',
     },
     {
-      id: car.id,
-      name: car.name,
+      id,
+      name,
       color: 'red',
     },
   ];
@@ -66,9 +69,9 @@ test('should move an object further', (t) => {
   t.deepEqual(actual, expected);
 });
 
-test('should remove the object old points', (t) => {
+test('should remove the shape old points', (t) => {
   const car = Car();
-  const state = moveObject(car, [3, 0]);
+  const state = moveShape(car, [3, 0]);
   const actual = [
     state['0.0'],
     state['1.0'],
@@ -83,9 +86,10 @@ test('should remove the object old points', (t) => {
   t.deepEqual(actual, expected);
 });
 
-test('should not lose other objects', (t) => {
+test('should not lose other shapes', (t) => {
   const car = Car();
   const ship = Ship();
+  const { id, name } = getShapeMeta(ship);
   const state = move(positionCarAndShip(car, ship, [0, 0], [0, 1]), car, [3, 0]);
   const actual = [
     state['0.1'],
@@ -94,18 +98,18 @@ test('should not lose other objects', (t) => {
   ];
   const expected = [
     {
-      id: ship.id,
-      name: ship.name,
+      id,
+      name,
       color: 'red',
     },
     {
-      id: ship.id,
-      name: ship.name,
+      id,
+      name,
       color: 'blue',
     },
     {
-      id: ship.id,
-      name: ship.name,
+      id,
+      name,
       color: 'red',
     },
   ];
@@ -140,6 +144,7 @@ test('should call a function when the object is about to collide', (t) => {
 test('should provide the colliding points', (t) => {
   const car = Car();
   const ship = Ship();
+  const { id, name } = getShapeMeta(ship);
   const state = positionCarAndShip(car, ship);
   let collidingPoints = [];
   move(state, car, [1, 0], (s, collidingPts) => {
@@ -148,8 +153,8 @@ test('should provide the colliding points', (t) => {
   const actual = collidingPoints;
   const expected = [
     {
-      id: ship.id,
-      name: ship.name,
+      id,
+      name,
       color: 'red',
     },
   ];
