@@ -2,7 +2,6 @@ import uniqueId from 'lodash/uniqueId';
 import assign from 'lodash/assign';
 import head from 'lodash/head';
 import keys from 'lodash/keys';
-import pick from 'lodash/pick';
 
 function getNonEmptyCells(cells) {
   return cells
@@ -11,12 +10,15 @@ function getNonEmptyCells(cells) {
 }
 
 export function getShapeMeta(shape) {
-  const key = head(keys(shape));
-  const point = shape[key];
-  return pick(point, [
-    'id',
-    'name',
-  ]);
+  const coords = keys(shape);
+  const firstCoord = head(coords);
+  const { id, name } = shape[firstCoord];
+  const length = coords.length;
+  return {
+    id,
+    name,
+    length,
+  };
 }
 
 export default function Shape(name, shape) {
