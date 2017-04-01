@@ -3,9 +3,9 @@ const test = require('ava');
 const jsdom = require('jsdom');
 const fixtures = require('./fixtures');
 const render = require('../').default;
-const getInitialState = require('../../core').default;
-const position = require('../../core/position').default;
-const { Car } = require('../../core/__tests__/fixtures');
+const getInitialState = require('../../').default;
+const position = require('../../position').default;
+const { Car } = require('../../__tests__/fixtures');
 const colors = require('../../colors.json');
 
 jsdom.env(
