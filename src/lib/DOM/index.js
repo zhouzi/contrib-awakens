@@ -42,6 +42,16 @@ export const keyCodes = {
   BOTTOM: 40,
 };
 
+// Note: could use requestAnimationFrame but I am not
+//       convinced its pros would outwheight its complexity
+//       since the animations are not meant to be smooth
+export function loop(callback, delay) {
+  (function next() {
+    callback();
+    setTimeout(next, delay);
+  })();
+}
+
 export default function render(state) {
   addMissingCells();
 

@@ -60,5 +60,8 @@ jsdom.env(
 
       t.deepEqual(actual, expected);
     });
+
+    // .loop() is really simple and testing it is boring :)
+    test.todo('should call a function at a given interval');
   },
 );
