@@ -49,7 +49,7 @@ export function loop(callback, delay) {
   (function next() {
     callback();
     setTimeout(next, delay);
-  })();
+  }());
 }
 
 export default function render(state) {
