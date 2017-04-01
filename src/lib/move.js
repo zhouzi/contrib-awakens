@@ -1,14 +1,10 @@
 import pickBy from 'lodash/pickBy';
-import omitBy from 'lodash/omitBy';
 import keys from 'lodash/keys';
 import has from 'lodash/has';
 import identity from 'lodash/identity';
 import { getShapeMeta } from './Shape';
 import position, { getShapeNewPosition } from './position';
-
-function removeShape(state, id) {
-  return omitBy(state, point => point.id === id);
-}
+import removeShape from './removeShape';
 
 function getCollidingPoints(state, currentShape, [futureX, futureY]) {
   const futureShape = getShapeNewPosition(currentShape, [futureX, futureY]);
@@ -27,7 +23,7 @@ function getCollidingPoints(state, currentShape, [futureX, futureY]) {
 export default function move(state, shape, [incrementX, incrementY], callback = identity) {
   const { id } = getShapeMeta(shape);
   const currentShape = pickBy(state, point => point.id === id);
-  const stateWithoutShape = removeShape(state, id);
+  const stateWithoutShape = removeShape(state, currentShape);
   const collidingPoints = getCollidingPoints(
     stateWithoutShape,
     currentShape,
