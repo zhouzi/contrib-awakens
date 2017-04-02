@@ -13,7 +13,7 @@ function getCols() {
 
 function removeUnnecessaryCells() {
   const cols = getCols();
-  const unnecessaryCols = cols.slice(bounds.x.max);
+  const unnecessaryCols = cols.slice(bounds.x.length);
   unnecessaryCols.forEach(col => col.parentElement.removeChild(col));
 }
 
