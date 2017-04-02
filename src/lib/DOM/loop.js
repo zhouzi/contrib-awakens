@@ -1,63 +1,65 @@
 /* global window */
-
-import assign from 'lodash/assign';
+/* eslint-disable no-param-reassign */
 
 let listeners = [];
 
-export function clearLoop(callback) {
-  if (callback == null) {
-    listeners = [];
-  } else {
-    listeners = listeners.filter(listener => listener.callback !== callback);
-  }
-}
-
-export function createLooper(fn, initialDelay = 0) {
-  let lastCallTimestamp = 0;
-  let delay = initialDelay;
-
-  return (timestamp) => {
-    if ((timestamp - lastCallTimestamp) >= delay) {
-      lastCallTimestamp = timestamp;
-      delay = fn(timestamp);
-    }
-  };
-}
-
-function loop() {
-  if (listeners.length === 0) {
-    return;
-  }
-
+(function loop() {
   window.requestAnimationFrame((timestamp) => {
-    listeners = listeners
-      .map((listener) => {
-        if (listener.start == null) {
-          return assign({}, listener, {
-            start: timestamp,
-          });
-        }
+    listeners.forEach((listener) => {
+      if (listener.startTimestamp == null) {
+        listener.startTimestamp = timestamp;
+      }
 
-        return listener;
-      });
-
-    listeners.forEach(({ start, callback }) => {
-      callback(timestamp - start);
+      const currentTimestamp = timestamp - listener.startTimestamp;
+      if ((timestamp - listener.lastFrameTimestamp) >= listener.delayBetweenFrames) {
+        listener.lastFrameTimestamp = timestamp;
+        listener.callback(currentTimestamp);
+      }
     });
 
     loop();
   });
+}());
+
+export function clearLoop() {
+  listeners = [];
 }
 
-export default function addCallback(callback) {
-  const loopIsActive = listeners.length > 0;
+function updateListener(callback, updater) {
+  listeners.forEach((listener) => {
+    if (listener.callback === callback) {
+      updater(listener);
+    }
+  });
+}
 
-  listeners = listeners.concat({
-    start: null,
+export default function addListener(
+  callback,
+  delayBetweenFrames = 0,
+  minDelayBetweenFrames = 0,
+  maxDelayBetweenFrames = Infinity,
+) {
+  listeners.push({
+    startTimestamp: null,
+    lastFrameTimestamp: null,
+    minDelayBetweenFrames,
+    maxDelayBetweenFrames,
+    delayBetweenFrames,
     callback,
   });
 
-  if (!loopIsActive) {
-    loop();
-  }
+  return {
+    incrementDelay: (delay) => {
+      updateListener(callback, (listener) => {
+        const newDelay = listener.delayBetweenFrames + delay;
+        listener.delayBetweenFrames = Math.min(newDelay, listener.maxDelayBetweenFrames);
+      });
+    },
+    decrementDelay: (delay) => {
+      updateListener(callback, (listener) => {
+        const newDelay = listener.delayBetweenFrames - delay;
+        listener.delayBetweenFrames = Math.max(newDelay, listener.minDelayBetweenFrames);
+      });
+    },
+  };
 }

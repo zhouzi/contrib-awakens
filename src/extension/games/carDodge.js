@@ -3,7 +3,7 @@
 import sample from 'lodash/sample';
 import times from 'lodash/times';
 import random from 'lodash/random';
-import createGame, { Shape, bounds, loop, createLooper, keyCodes, onKeyDown, render } from '../../lib';
+import createGame, { Shape, bounds, loop, keyCodes, onKeyDown, render } from '../../lib';
 import colors from '../../lib/colors.json';
 
 export default function (onGameOver) {
@@ -65,16 +65,14 @@ export default function (onGameOver) {
 
   const minDelay = 100;
   const maxDelay = 800;
-  let delayBetweenBrickMoves = maxDelay;
-  loop(createLooper(() => {
+  const initialDelay = Math.round((maxDelay - minDelay) / 2);
+  const bricksLoop = loop(() => {
     moveBricks();
 
     if (state != null && random(1, 2) === 1) {
       spawnBrick();
     }
-
-    return delayBetweenBrickMoves;
-  }));
+  }, initialDelay, minDelay, maxDelay);
 
   loop(() => render(state));
 
@@ -92,12 +90,7 @@ export default function (onGameOver) {
   onKeyDown(keyCodes.TOP, () => moveCar('top'));
   onKeyDown(keyCodes.BOTTOM, () => moveCar('bottom'));
 
-  const delayDecrement = 50;
-  onKeyDown(keyCodes.RIGHT, () => {
-    delayBetweenBrickMoves = Math.max(minDelay, delayBetweenBrickMoves - delayDecrement);
-  });
-
-  onKeyDown(keyCodes.LEFT, () => {
-    delayBetweenBrickMoves = Math.min(maxDelay, delayBetweenBrickMoves + delayDecrement);
-  });
+  const speedDelay = 50;
+  onKeyDown(keyCodes.RIGHT, () => bricksLoop.decrementDelay(speedDelay));
+  onKeyDown(keyCodes.LEFT, () => bricksLoop.incrementDelay(speedDelay));
 }
