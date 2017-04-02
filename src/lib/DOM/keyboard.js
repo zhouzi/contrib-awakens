@@ -1,3 +1,5 @@
+/* global window */
+
 import get from 'lodash/get';
 import omitBy from 'lodash/omitBy';
 
