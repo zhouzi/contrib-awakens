@@ -3,6 +3,7 @@
 import toArray from 'lodash/toArray';
 import forEach from 'lodash/forEach';
 import has from 'lodash/has';
+import { bounds } from '../';
 import colors from '../colors.json';
 
 function getCols() {
@@ -10,9 +11,14 @@ function getCols() {
   return toArray(graph.querySelector('g').querySelectorAll('g'));
 }
 
+function removeUnnecessaryCells() {
+  const cols = getCols();
+  const unnecessaryCols = cols.slice(bounds.x.max);
+  unnecessaryCols.forEach(col => col.parentElement.removeChild(col));
+}
+
 function addMissingCells() {
   const cols = getCols();
-  const length = cols[0].children.length;
 
   // we must use the first column as an example
   // because the last one may have only one cell (on sundays)
@@ -24,13 +30,13 @@ function addMissingCells() {
     .forEach((col) => {
       const cells = col.children;
 
-      if (cells.length === length) {
+      if (cells.length === bounds.y.length) {
         return;
       }
 
       const exampleCell = cells[0];
 
-      for (let i = cells.length; i < length; i += 1) {
+      for (let i = cells.length; i < bounds.y.length; i += 1) {
         const clone = exampleCell.cloneNode();
         clone.setAttribute('y', String(yIncrement * i));
         col.appendChild(clone);
@@ -39,6 +45,7 @@ function addMissingCells() {
 }
 
 export default function render(state) {
+  removeUnnecessaryCells();
   addMissingCells();
 
   const cols = getCols().map(col => toArray(col.children));

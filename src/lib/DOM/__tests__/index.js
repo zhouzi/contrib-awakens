@@ -61,7 +61,7 @@ jsdom.env(
       t.deepEqual(actual, expected);
     });
 
-    // .loop() is really simple and testing it is boring :)
+    test.todo('render() also removes "unnecessary" columns (on sunday there are 54 columns instead of 53)');
     test.todo('should call a function at a given interval');
   },
 );
