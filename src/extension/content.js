@@ -1,6 +1,7 @@
 /* global window */
 
 import sample from 'lodash/sample';
+import log from './log';
 import createCarDodge from './games/carDodge';
 
 const games = [
@@ -10,7 +11,7 @@ const createGame = sample(games);
 
 (function startGame() {
   createGame(() => {
-    console.info('Game Over!');// eslint-disable-line no-console
+    log('Game Over!');
     startGame();
   });
 }());

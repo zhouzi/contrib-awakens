@@ -3,10 +3,18 @@
 import sample from 'lodash/sample';
 import times from 'lodash/times';
 import random from 'lodash/random';
+import log from '../log';
 import createGame, { Shape, bounds, loop, keyCodes, onKeyDown, render } from '../../lib';
 import colors from '../../lib/colors.json';
 
 export default function (onGameOver) {
+  log(
+    'Press top to move top',
+    'Press bottom to move bottom',
+    'Press right to accelerate',
+    'Press left to decelerate',
+  );
+
   let state = createGame();
 
   const car = Shape('car', [
