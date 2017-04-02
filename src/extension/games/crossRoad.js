@@ -102,9 +102,19 @@ export default function (onGameOver) {
     state = state.position(shape, [x, y]);
   }
 
-  loop(() => moveCars('slow'), 500);
-  loop(() => moveCars('fast'), 200);
-  loop(() => spawnCar(), 250);
+  function safeCall(fn) {
+    return () => {
+      if (state == null) {
+        return;
+      }
+
+      fn();
+    };
+  }
+
+  loop(safeCall(() => moveCars('slow')), 500);
+  loop(safeCall(() => moveCars('fast')), 200);
+  loop(safeCall(() => spawnCar()), 250);
   loop(() => render(state));
 
   function moveCharacter(direction) {
