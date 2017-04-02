@@ -112,3 +112,5 @@ test('should position several shapes', (t) => {
 
   t.deepEqual(actual, expected);
 });
+
+test.todo('position(position(state, car, [0, 0]), car, [0, 0]) should === state');

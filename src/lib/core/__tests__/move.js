@@ -167,3 +167,6 @@ test('should provide the colliding points', (t) => {
 
   t.deepEqual(actual, expected);
 });
+
+test.todo('move(state, car, [0, 0]) should === state');
+test.todo('move(state, car, [0, 0]) should === move(move(state, car, [0, 0]), car, [0, 0])');
