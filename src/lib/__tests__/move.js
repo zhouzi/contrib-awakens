@@ -45,6 +45,12 @@ test('should move a shape', (t) => {
   t.deepEqual(actual, expected);
 });
 
+test('should throw an error when trying to move an object that\'s not on the grid', (t) => {
+  const car = Car();
+  const state = getInitialState();
+  t.throws(() => move(state, car, [0, 0]));
+});
+
 test('should move a shape further', (t) => {
   const car = Car();
   const { id, name } = getShapeMeta(car);

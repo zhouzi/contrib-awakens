@@ -23,6 +23,11 @@ function getCollidingPoints(state, currentShape, [futureX, futureY]) {
 export default function move(state, shape, [incrementX, incrementY], callback = identity) {
   const { id } = getShapeMeta(shape);
   const currentShape = pickBy(state, point => point.id === id);
+
+  if (keys(currentShape).length === 0) {
+    throw new Error('move cannot move a shape that isn\'t on the grid');
+  }
+
   const stateWithoutShape = removeShape(state, currentShape);
   const collidingPoints = getCollidingPoints(
     stateWithoutShape,
