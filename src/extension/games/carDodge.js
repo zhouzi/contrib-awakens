@@ -150,7 +150,7 @@ export default function createGame(onGameOver) {
     }
 
     // render state 60 times per second
-    render();
+    render(state);
   });
 
   function moveCar(direction) {
