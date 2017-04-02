@@ -14,6 +14,12 @@ function addMissingCells() {
   const cols = getCols();
   const length = cols[0].children.length;
 
+  // we must use the first column as an example
+  // because the last one may have only one cell (on sundays)
+  const firstCellY = Number(cols[0].children[0].getAttribute('y'));
+  const secondCellY = Number(cols[0].children[1].getAttribute('y'));
+  const yIncrement = secondCellY - firstCellY;
+
   cols
     .forEach((col) => {
       const cells = col.children;
@@ -22,9 +28,6 @@ function addMissingCells() {
         return;
       }
 
-      const firstCellY = Number(cells[0].getAttribute('y'));
-      const secondCellY = Number(cells[1].getAttribute('y'));
-      const yIncrement = secondCellY - firstCellY;
       const exampleCell = cells[0];
 
       for (let i = cells.length; i < length; i += 1) {
