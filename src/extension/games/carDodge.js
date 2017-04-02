@@ -3,12 +3,12 @@
 import sample from 'lodash/sample';
 import times from 'lodash/times';
 import random from 'lodash/random';
-import getInitialState, { bounds } from '../../lib';
-import position from '../../lib/position';
-import Shape from '../../lib/Shape';
-import move from '../../lib/move';
-import isOutOfBounds from '../../lib/isOutOfBounds';
-import removeShape from '../../lib/removeShape';
+import getInitialState, { bounds } from '../../lib/core';
+import position from '../../lib/core/position';
+import Shape from '../../lib/core/Shape';
+import move from '../../lib/core/move';
+import isOutOfBounds from '../../lib/core/isOutOfBounds';
+import removeShape from '../../lib/core/removeShape';
 import colors from '../../lib/colors.json';
 import render from '../../lib/DOM';
 import loop, { clearLoop } from '../../lib/DOM/loop';

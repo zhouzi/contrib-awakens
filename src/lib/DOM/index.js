@@ -3,7 +3,7 @@
 import toArray from 'lodash/toArray';
 import forEach from 'lodash/forEach';
 import has from 'lodash/has';
-import { bounds } from '../';
+import { bounds } from '../core';
 import colors from '../colors.json';
 
 function getCols() {
