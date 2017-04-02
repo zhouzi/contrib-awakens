@@ -2,8 +2,8 @@ export const bounds = {
   x: {
     min: 0,
     max: 52,
-    length: 26,
-    middle: 3,
+    length: 53,
+    middle: 26,
   },
   y: {
     min: 0,
