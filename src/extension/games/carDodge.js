@@ -3,7 +3,7 @@
 import sample from 'lodash/sample';
 import times from 'lodash/times';
 import random from 'lodash/random';
-import createGame, { Shape, bounds, loop, createLooper, keyCodes, onKeyDown } from '../../lib';
+import createGame, { Shape, bounds, loop, createLooper, keyCodes, onKeyDown, render } from '../../lib';
 import colors from '../../lib/colors.json';
 
 export default function (onGameOver) {
@@ -76,11 +76,7 @@ export default function (onGameOver) {
     return delayBetweenBrickMoves;
   }));
 
-  loop(() => {
-    if (state != null) {
-      state.render();
-    }
-  });
+  loop(() => render(state));
 
   function moveCar(direction) {
     const coord = direction === 'top' ? [0, -1] : [0, 1];

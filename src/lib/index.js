@@ -1,7 +1,7 @@
 import mapValues from 'lodash/mapValues';
 import assign from 'lodash/assign';
 
-import render from './DOM';
+import DOMRender from './DOM';
 import { clearLoop } from './DOM/loop';
 import { removeKeyDownListener } from './DOM/keyboard';
 import getInitialState from './core';
@@ -20,6 +20,7 @@ function clear() {
   removeKeyDownListener();
 }
 
+const privateGetterName = '__superPrivateStateGetter__';
 function bindMethodsToState(state) {
   const api = assign({}, mapValues({
     position,
@@ -39,13 +40,15 @@ function bindMethodsToState(state) {
     return bindMethodsToState(nextState);
   }), {
     isOutOfBounds: shape => isOutOfBounds(state, shape),
-    render: () => {
-      render(state);
-      return api;
-    },
+    [privateGetterName]: () => state,
   });
 
   return api;
+}
+
+export function render(api) {
+  const state = api == null ? null : api[privateGetterName]();
+  DOMRender(state);
 }
 
 export default function createGame() {
