@@ -11,7 +11,7 @@ jsdom.env(
 
     global.window = window;
 
-    const createGame = require('../').default;
+    const createGame = require('../').default;// eslint-disable-line global-require
 
     test('should return a different object when state changed', (t) => {
       const car = Car();
