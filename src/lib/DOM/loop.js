@@ -19,7 +19,7 @@ export function off(callback) {
 }
 
 function loop() {
-  timerId = window.requestAnimationFrame(function step(timestamp) {
+  timerId = window.requestAnimationFrame((timestamp) => {
     if (loopStart == null) {
       loopStart = timestamp;
     }
