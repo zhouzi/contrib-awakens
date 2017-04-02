@@ -61,7 +61,7 @@ export default function createGame(onGameOver) {
     // use a for loop and not .reduce() because
     // we want to return early in the case of a brick
     // colliding with the car
-    for (let i = 0; i < bricks.length; i++) {
+    for (let i = 0; i < bricks.length; i += 1) {
       const brick = bricks[i];
 
       // move the brick to the left

@@ -1,8 +1,10 @@
-import createCarDodge from './games/carDodge'
+/* global window */
+
+import createCarDodge from './games/carDodge';
 
 function startGame() {
   createCarDodge(() => {
-    alert('Game Over!');
+    window.alert('Game Over!');// eslint-disable-line no-alert
     startGame();
   });
 }
