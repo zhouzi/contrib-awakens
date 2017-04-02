@@ -10,7 +10,7 @@ jsdom.env(
     }
 
     global.window = window;
-    window.requestAnimationFrame = () => {};
+    window.requestAnimationFrame = () => {};// eslint-disable-line no-param-reassign
 
     const createGame = require('../').default;// eslint-disable-line global-require
 
