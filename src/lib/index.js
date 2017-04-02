@@ -12,7 +12,7 @@ import isOutOfBounds from './core/isOutOfBounds';
 
 export { bounds } from './core';
 export { default as Shape } from './core/Shape';
-export { default as loop } from './DOM/loop';
+export { default as loop, createLooper } from './DOM/loop';
 export { default as onKeyDown, keyCodes } from './DOM/keyboard';
 
 function clear() {

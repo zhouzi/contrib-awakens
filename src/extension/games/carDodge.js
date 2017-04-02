@@ -3,7 +3,7 @@
 import sample from 'lodash/sample';
 import times from 'lodash/times';
 import random from 'lodash/random';
-import createGame, { Shape, bounds, loop, keyCodes, onKeyDown } from '../../lib';
+import createGame, { Shape, bounds, loop, createLooper, keyCodes, onKeyDown } from '../../lib';
 import colors from '../../lib/colors.json';
 
 export default function (onGameOver) {
@@ -109,32 +109,24 @@ export default function (onGameOver) {
   const minDelay = 100;
   const maxDelay = 800;
   let delayBetweenBrickMoves = maxDelay;
-  let lastMoveTimestamp = 0;
-  loop((timestamp) => {
-    // timestamp is the number of milliseconds elapsed since
-    // the loop began so subtracting the lastMoveTimestamp to it
-    // gives us the number of milliseconds since the last time we
-    // moved and/or spawned bricks
-    if ((timestamp - lastMoveTimestamp) >= delayBetweenBrickMoves) {
-      lastMoveTimestamp = timestamp;
+  loop(createLooper(() => {
+    // move all the bricks by 1 to the left
+    moveBricks();
 
-      // move all the bricks by 1 to the left
-      moveBricks();
-
-      // moveBricks make have caused a game over
-      // in such case, stop the execution
-      if (state == null) {
-        return;
-      }
-
-      // there's 50% change to spawn a brick
-      if (random(1, 2) === 1) {
-        spawnBrick();
-      }
+    // moveBricks make have caused a game over
+    // in such case, stop the execution
+    // otherwise there's 50% change to spawn a brick
+    if (state != null && random(1, 2) === 1) {
+      spawnBrick();
     }
 
-    // render state 60 times per second
-    state.render();
+    return delayBetweenBrickMoves;
+  }));
+
+  loop(() => {
+    if (state != null) {
+      state.render();
+    }
   });
 
   function moveCar(direction) {

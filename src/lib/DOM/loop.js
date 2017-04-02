@@ -12,6 +12,18 @@ export function clearLoop(callback) {
   }
 }
 
+export function createLooper(fn, initialDelay = 0) {
+  let lastCallTimestamp = 0;
+  let delay = initialDelay;
+
+  return (timestamp) => {
+    if ((timestamp - lastCallTimestamp) >= delay) {
+      lastCallTimestamp = timestamp;
+      delay = fn(timestamp);
+    }
+  };
+}
+
 function loop() {
   if (listeners.length === 0) {
     return;
