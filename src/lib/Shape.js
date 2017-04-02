@@ -2,6 +2,7 @@ import uniqueId from 'lodash/uniqueId';
 import assign from 'lodash/assign';
 import head from 'lodash/head';
 import keys from 'lodash/keys';
+import isString from 'lodash/isString';
 
 function getNonEmptyCells(cells) {
   return cells
@@ -22,8 +23,12 @@ export function getShapeMeta(shape) {
 }
 
 export default function Shape(name, shape) {
+  if (!isString(name)) {
+    throw new Error('Shape expects first argument to be a name (string)');
+  }
+
   const id = uniqueId(`${name}-`);
-  return shape
+  const mappedShape = shape
     .map((cells, y) => (
       getNonEmptyCells(cells)
         .reduce((acc, { color, x }) => assign(acc, {
@@ -35,4 +40,10 @@ export default function Shape(name, shape) {
         }), {})
     ))
     .reduce((acc, cells) => assign(acc, cells), {});
+
+  if (keys(mappedShape).length === 0) {
+    throw new Error('Shape cannot create an object without any cells');
+  }
+
+  return mappedShape;
 }

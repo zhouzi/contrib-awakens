@@ -18,6 +18,18 @@ test('should expose a function', (t) => {
   t.is(actual, expected);
 });
 
+test('should throw an error if shape misses a name', (t) => {
+  t.throws(() => Shape([['red']]));
+});
+
+test('should throw an error if shape has no cells', (t) => {
+  t.throws(() => Shape('car', []));
+});
+
+test('should throw an error if shape has only empty cells', (t) => {
+  t.throws(() => Shape('car', [[]]));
+});
+
 test('should create a shape with a name', (t) => {
   const actual = getShapeMeta(Car()).name;
   const expected = 'car';
