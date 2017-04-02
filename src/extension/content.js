@@ -10,7 +10,7 @@ const createGame = sample(games);
 
 (function startGame() {
   createGame(() => {
-    window.alert('Game Over!');// eslint-disable-line no-alert
+    console.info('Game Over!');// eslint-disable-line no-console
     startGame();
   });
 }());

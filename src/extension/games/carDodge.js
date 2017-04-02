@@ -3,32 +3,18 @@
 import sample from 'lodash/sample';
 import times from 'lodash/times';
 import random from 'lodash/random';
-import getInitialState, { bounds } from '../../lib/core';
-import position from '../../lib/core/position';
-import Shape from '../../lib/core/Shape';
-import move from '../../lib/core/move';
-import isOutOfBounds from '../../lib/core/isOutOfBounds';
-import removeShape from '../../lib/core/removeShape';
+import createGame, { Shape, bounds, loop, keyCodes, onKeyDown } from '../../lib';
 import colors from '../../lib/colors.json';
-import render from '../../lib/DOM';
-import loop, { clearLoop } from '../../lib/DOM/loop';
-import onKeyDown, { keyCodes, removeKeyDownListener } from '../../lib/DOM/keyboard';
 
-export default function createGame(onGameOver) {
-  // remove previous loop's callbacks
-  clearLoop();
-
-  // remove previous key down event listeners
-  removeKeyDownListener();
-
+export default function (onGameOver) {
   const car = Shape('car', [
     [colors.LOW, colors.LOW],
   ]);
 
-  let state = getInitialState();
+  let state = createGame();
 
   // position the car to the left
-  state = position(state, car, [bounds.x.min + 1, bounds.y.middle]);
+  state = state.position(car, [bounds.x.min + 1, bounds.y.middle]);
 
   // bricks have random colors
   // below is the list of the possible ones
@@ -36,14 +22,6 @@ export default function createGame(onGameOver) {
     colors.HIGH,
     colors.VERY_HIGH,
   ];
-
-  function gameOver() {
-    clearLoop();
-    removeKeyDownListener();
-
-    state = null;
-    onGameOver();
-  }
 
   // createBrick returns bricks of random
   // shapes (colors and length)
@@ -65,7 +43,7 @@ export default function createGame(onGameOver) {
       const brick = bricks[i];
 
       // move the brick to the left
-      state = move(state, brick, [-1, 0], (s, collidingPoints) => {
+      state = state.move(brick, [-1, 0], (s, collidingPoints) => {
         // this function is called when a brick collides with
         // something else
         // since we're moving the bricks to the most left first
@@ -86,9 +64,9 @@ export default function createGame(onGameOver) {
 
       // state is null, it means the game is over
       if (state == null) {
-        gameOver();
+        onGameOver();
 
-        // no need to go further, just break the loop
+        // no need to go further, just stop the execution
         return;
       }
     }
@@ -98,11 +76,11 @@ export default function createGame(onGameOver) {
     bricks = bricks.filter((brick) => {
       // isOutOfBounds returns the percentage of the shape
       // to be out of bounds (an int between 0 and 1)
-      const shouldRemove = isOutOfBounds(state, brick) === 1;
+      const shouldRemove = state.isOutOfBounds(brick) === 1;
       if (shouldRemove) {
         // remove this shape from the state
         // we don't need it anymore
-        state = removeShape(state, brick);
+        state = state.removeShape(brick);
 
         // returning false here will also filter out
         // the brick from our bricks array
@@ -125,7 +103,7 @@ export default function createGame(onGameOver) {
     // randomly somewhere on the y axis
     const y = random(bounds.y.min, bounds.y.max);
 
-    state = position(state, brick, [x, y]);
+    state = state.position(brick, [x, y]);
   }
 
   const minDelay = 100;
@@ -143,6 +121,12 @@ export default function createGame(onGameOver) {
       // move all the bricks by 1 to the left
       moveBricks();
 
+      // moveBricks make have caused a game over
+      // in such case, stop the execution
+      if (state == null) {
+        return;
+      }
+
       // there's 50% change to spawn a brick
       if (random(1, 2) === 1) {
         spawnBrick();
@@ -150,18 +134,18 @@ export default function createGame(onGameOver) {
     }
 
     // render state 60 times per second
-    render(state);
+    state.render();
   });
 
   function moveCar(direction) {
     const coord = direction === 'top' ? [0, -1] : [0, 1];
-    const nextState = move(state, car, coord, () => null);
+    const nextState = state.move(car, coord, () => null);
 
     // just like the bricks, if the car moves
     // into a brick, it's game over
     if (nextState == null) {
-      gameOver();
-    } else if (isOutOfBounds(nextState, car) === 0) {
+      onGameOver();
+    } else if (nextState.isOutOfBounds(car) === 0) {
       // also, prevent the car from moving out of the bounds
       state = nextState;
     }
