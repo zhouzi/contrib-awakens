@@ -44,9 +44,20 @@ function addMissingCells() {
     });
 }
 
+let lastRenderedState = null;
 export default function render(state) {
+  if (state === lastRenderedState) {
+    return;
+  }
+
+  lastRenderedState = state;
+
   removeUnnecessaryCells();
   addMissingCells();
+
+  if (state == null) {
+    return;
+  }
 
   const cols = getCols().map(col => toArray(col.children));
   forEach(cols, (cells, x) => {

@@ -128,26 +128,6 @@ export default function createGame(onGameOver) {
     state = position(state, brick, [x, y]);
   }
 
-  let lastRenderedState = null;
-  function renderState() {
-    // state is null when the game is over
-    // so we must not render it
-    if (state == null) {
-      return;
-    }
-
-    // since all functions are pure in lib/
-    // the state will be a new object every time
-    // it changes, making it easy to know when a render
-    // should happen
-    // this is especially important since this function
-    // is called within the loop (further below), 60 times per second
-    if (lastRenderedState !== state) {
-      lastRenderedState = state;
-      render(state);
-    }
-  }
-
   const minDelay = 100;
   const maxDelay = 800;
   let delayBetweenBrickMoves = maxDelay;
@@ -170,7 +150,7 @@ export default function createGame(onGameOver) {
     }
 
     // render state 60 times per second
-    renderState();
+    render();
   });
 
   function moveCar(direction) {
