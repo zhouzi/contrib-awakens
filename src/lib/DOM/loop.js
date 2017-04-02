@@ -2,16 +2,10 @@
 
 import assign from 'lodash/assign';
 
-let loopStart = null;
-let timerId = null;
 let listeners = [];
 
-export function off(callback) {
+export function clearLoop(callback) {
   if (callback == null) {
-    window.cancelAnimationFrame(timerId);
-
-    loopStart = null;
-    timerId = null;
     listeners = [];
   } else {
     listeners = listeners.filter(listener => listener.callback !== callback);
@@ -19,11 +13,11 @@ export function off(callback) {
 }
 
 function loop() {
-  timerId = window.requestAnimationFrame((timestamp) => {
-    if (loopStart == null) {
-      loopStart = timestamp;
-    }
+  if (listeners.length === 0) {
+    return;
+  }
 
+  window.requestAnimationFrame((timestamp) => {
     listeners = listeners
       .map((listener) => {
         if (listener.start == null) {
@@ -36,7 +30,7 @@ function loop() {
       });
 
     listeners.forEach(({ start, callback }) => {
-      callback(timestamp - start, timestamp - loopStart, timestamp);
+      callback(timestamp - start);
     });
 
     loop();
@@ -44,12 +38,14 @@ function loop() {
 }
 
 export default function addCallback(callback) {
-  listeners.push({
+  const loopIsActive = listeners.length > 0;
+
+  listeners = listeners.concat({
     start: null,
     callback,
   });
 
-  if (timerId == null) {
+  if (!loopIsActive) {
     loop();
   }
 }
