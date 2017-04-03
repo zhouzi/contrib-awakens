@@ -20,6 +20,7 @@ export const keyCodes = {
   TOP: 38,
   RIGHT: 39,
   BOTTOM: 40,
+  SPACEBAR: 32,
 };
 
 export function removeKeyDownListener(keyCode, callback) {
