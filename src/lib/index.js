@@ -9,6 +9,7 @@ import position from './core/position';
 import move from './core/move';
 import removeShape from './core/removeShape';
 import isOutOfBounds from './core/isOutOfBounds';
+import { reduceLeft } from './core/reduce';
 
 export { bounds } from './core';
 export { default as Shape } from './core/Shape';
@@ -26,6 +27,7 @@ function bindMethodsToState(state) {
     position,
     move,
     removeShape,
+    reduceLeft,
   }, fn => (...args) => {
     const nextState = fn(state, ...args);
     if (nextState === state) {
