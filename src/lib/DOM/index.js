@@ -6,9 +6,16 @@ import has from 'lodash/has';
 import { bounds } from '../core';
 import colors from '../colors.json';
 
+function getGraph() {
+  return window.document.querySelector('.js-calendar-graph-svg');
+}
+
+export function hasGraph() {
+  return getGraph() != null;
+}
+
 function getCols() {
-  const graph = window.document.querySelector('.js-calendar-graph-svg');
-  return toArray(graph.querySelector('g').querySelectorAll('g'));
+  return toArray(getGraph().querySelector('g').querySelectorAll('g'));
 }
 
 function removeUnnecessaryCells() {
