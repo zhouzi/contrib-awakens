@@ -13,6 +13,13 @@ export const bounds = {
   },
 };
 
+export const directions = {
+  top: [0, -1],
+  right: [1, 0],
+  bottom: [0, 1],
+  left: [-1, 0],
+};
+
 export default function getInitialState() {
   return {};
 }
