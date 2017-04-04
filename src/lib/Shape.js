@@ -14,12 +14,13 @@ function getNonEmptyCells(cells) {
 export function getShapeMeta(shape) {
   const coords = keys(shape);
   const firstCoord = head(coords);
-  const { id, name } = shape[firstCoord];
+  const { id, name, meta } = shape[firstCoord];
   const length = coords.length;
   return {
     id,
     name,
     length,
+    meta,
   };
 }
 
