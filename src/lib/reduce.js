@@ -1,22 +1,9 @@
-import reduce from 'lodash/reduce';
-import map from 'lodash/map';
-import merge from 'lodash/merge';
 import keys from 'lodash/keys';
 import head from 'lodash/head';
-import identity from 'lodash/identity';
+import isString from 'lodash/isString';
 import coordKey from './coordKey';
 import { getShapeMeta } from './Shape';
-
-function getShapes(state) {
-  const shapesMap = reduce(state, (acc, point, coord) => (
-    merge({}, acc, {
-      [point.id]: {
-        [coord]: point,
-      },
-    })
-  ), {});
-  return map(shapesMap, identity);
-}
+import getShapes from './getShapes';
 
 function getAxisCoords(shape, axis) {
   const X = 0;
@@ -28,14 +15,16 @@ function getAxisCoords(shape, axis) {
     .sort();
 }
 
-export function filterShapes(fn, name) {
-  return (state, shape) => {
-    if (getShapeMeta(shape).name === name) {
-      return fn(state, shape);
-    }
-
-    return state;
-  };
+export function filterShapes(fn, filter) {
+  const filterFn =
+    isString(filter)
+      ? shape => getShapeMeta(shape).name === filter
+      : filter;
+  return (state, shape) => (
+    filterFn(shape)
+      ? fn(state, shape)
+      : state
+  );
 }
 
 export default function reduceShapes(state, shapes, iteratee) {
