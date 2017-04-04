@@ -4,7 +4,16 @@ import sample from 'lodash/sample';
 import times from 'lodash/times';
 import random from 'lodash/random';
 import log from '../log';
-import createGame, { Shape, bounds, loop, keyCodes, onKeyDown, render } from '../../lib';
+import getInitialState, { bounds } from '../../lib';
+import position from '../../lib/position';
+import move from '../../lib/move';
+import Shape from '../../lib/Shape';
+import isOutOfBounds from '../../lib/isOutOfBounds';
+import removeShape from '../../lib/removeShape';
+import render from '../../lib/DOM';
+import loop from '../../lib/DOM/loop';
+import onKeyDown, { keyCodes } from '../../lib/DOM/keyboard';
+import clear from '../../lib/DOM/clear';
 import colors from '../../lib/colors.json';
 
 export default function (onGameOver) {
@@ -15,12 +24,12 @@ export default function (onGameOver) {
     'Press left to decelerate',
   );
 
-  let state = createGame();
+  let state = getInitialState();
 
   const car = Shape('car', [
     [colors.LOW, colors.LOW],
   ]);
-  state = state.position(car, [bounds.x.min + 1, bounds.y.middle]);
+  state = position(state, car, [bounds.x.min + 1, bounds.y.middle]);
 
   const bricksColor = [
     colors.HIGH,
@@ -37,7 +46,7 @@ export default function (onGameOver) {
     for (let i = 0; i < bricks.length; i += 1) {
       const brick = bricks[i];
 
-      state = state.move(brick, [-1, 0], (s, collidingPoints) => {
+      state = move(state, brick, [-1, 0], (s, collidingPoints) => {
         if (collidingPoints.some(({ name }) => name === 'car')) {
           return null;
         }
@@ -46,15 +55,16 @@ export default function (onGameOver) {
       });
 
       if (state == null) {
+        clear();
         onGameOver();
         return;
       }
     }
 
     bricks = bricks.filter((brick) => {
-      const shouldRemove = state.isOutOfBounds(brick) === 1;
+      const shouldRemove = isOutOfBounds(state, brick) === 1;
       if (shouldRemove) {
-        state = state.removeShape(brick);
+        state = removeShape(state, brick);
         return false;
       }
 
@@ -68,7 +78,7 @@ export default function (onGameOver) {
 
     const x = bounds.x.max;
     const y = random(bounds.y.min, bounds.y.max);
-    state = state.position(brick, [x, y]);
+    state = position(state, brick, [x, y]);
   }
 
   const minDelay = 100;
@@ -86,11 +96,12 @@ export default function (onGameOver) {
 
   function moveCar(direction) {
     const coord = direction === 'top' ? [0, -1] : [0, 1];
-    const nextState = state.move(car, coord, () => null);
+    const nextState = move(state, car, coord, () => null);
 
     if (nextState == null) {
+      clear();
       onGameOver();
-    } else if (nextState.isOutOfBounds(car) === 0) {
+    } else if (isOutOfBounds(state, car) === 0) {
       state = nextState;
     }
   }

@@ -4,7 +4,16 @@ import sample from 'lodash/sample';
 import random from 'lodash/random';
 import keys from 'lodash/keys';
 import log from '../log';
-import createGame, { Shape, bounds, loop, keyCodes, onKeyDown, render } from '../../lib';
+import getInitialState, { bounds } from '../../lib';
+import position from '../../lib/position';
+import move from '../../lib/move';
+import isOutOfBounds from '../../lib/isOutOfBounds';
+import removeShape from '../../lib/removeShape';
+import Shape from '../../lib/Shape';
+import render from '../../lib/DOM';
+import loop from '../../lib/DOM/loop';
+import onKeyDown, { keyCodes } from '../../lib/DOM/keyboard';
+import clear from '../../lib/DOM/clear';
 import colors from '../../lib/colors.json';
 
 export default function (onGameOver) {
@@ -15,12 +24,12 @@ export default function (onGameOver) {
     'Press left to move left',
   );
 
-  let state = createGame();
+  let state = getInitialState();
 
   const character = Shape('character', [
     [colors.LOW],
   ]);
-  state = state.position(character, [bounds.x.min + 1, bounds.y.middle]);
+  state = position(state, character, [bounds.x.min + 1, bounds.y.middle]);
 
   const carsColor = [
     colors.HIGH,
@@ -43,7 +52,7 @@ export default function (onGameOver) {
     for (let i = 0; i < cars.length; i += 1) {
       const { direction, shape } = cars[i];
 
-      state = state.move(shape, [0, direction === 'top' ? -1 : 1], (s, collidingPoints) => {
+      state = move(state, shape, [0, direction === 'top' ? -1 : 1], (s, collidingPoints) => {
         if (collidingPoints.some(({ name }) => name === 'character')) {
           return null;
         }
@@ -52,15 +61,16 @@ export default function (onGameOver) {
       });
 
       if (state == null) {
+        clear();
         onGameOver();
         return;
       }
     }
 
     carsGroups[group] = carsGroups[group].filter((car) => {
-      const shouldRemove = state.isOutOfBounds(car.shape) === 1;
+      const shouldRemove = isOutOfBounds(state, car.shape) === 1;
       if (shouldRemove) {
-        state = state.removeShape(car.shape);
+        state = removeShape(state, car.shape);
         return false;
       }
 
@@ -99,7 +109,7 @@ export default function (onGameOver) {
       x,
     });
 
-    state = state.position(shape, [x, y]);
+    state = position(state, shape, [x, y]);
   }
 
   function safeCall(fn) {
@@ -130,11 +140,12 @@ export default function (onGameOver) {
       coord = [-1, 0];
     }
 
-    const nextState = state.move(character, coord, () => null);
+    const nextState = move(state, character, coord, () => null);
 
     if (nextState == null) {
+      clear();
       onGameOver();
-    } else if (nextState.isOutOfBounds(character) === 0) {
+    } else if (isOutOfBounds(nextState, character) === 0) {
       state = nextState;
     }
   }
