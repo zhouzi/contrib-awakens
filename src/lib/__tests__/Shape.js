@@ -67,11 +67,13 @@ test('should contain a mapping of the points', (t) => {
       id,
       name,
       color: 'red',
+      meta: {},
     },
     '1.0': {
       id,
       name,
       color: 'red',
+      meta: {},
     },
   };
 
@@ -87,16 +89,19 @@ test('should contain a different mapping', (t) => {
       id,
       name,
       color: 'red',
+      meta: {},
     },
     '1.0': {
       id,
       name,
       color: 'blue',
+      meta: {},
     },
     '2.0': {
       id,
       name,
       color: 'red',
+      meta: {},
     },
   };
 
@@ -112,26 +117,31 @@ test('should ignore null values', (t) => {
       id,
       name,
       color: 'red',
+      meta: {},
     },
     0.1: {
       id,
       name,
       color: 'red',
+      meta: {},
     },
     1.1: {
       id,
       name,
       color: 'red',
+      meta: {},
     },
     1.2: {
       id,
       name,
       color: 'red',
+      meta: {},
     },
     2.1: {
       id,
       name,
       color: 'red',
+      meta: {},
     },
   };
 

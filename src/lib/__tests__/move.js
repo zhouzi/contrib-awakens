@@ -34,11 +34,13 @@ test('should move a shape', (t) => {
       id,
       name,
       color: 'red',
+      meta: {},
     },
     {
       id,
       name,
       color: 'red',
+      meta: {},
     },
   ];
 
@@ -64,11 +66,13 @@ test('should move a shape further', (t) => {
       id,
       name,
       color: 'red',
+      meta: {},
     },
     {
       id,
       name,
       color: 'red',
+      meta: {},
     },
   ];
 
@@ -107,16 +111,19 @@ test('should not lose other shapes', (t) => {
       id,
       name,
       color: 'red',
+      meta: {},
     },
     {
       id,
       name,
       color: 'blue',
+      meta: {},
     },
     {
       id,
       name,
       color: 'red',
+      meta: {},
     },
   ];
 
@@ -162,6 +169,7 @@ test('should provide the colliding points', (t) => {
       id,
       name,
       color: 'red',
+      meta: {},
     },
   ];
 

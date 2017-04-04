@@ -20,11 +20,13 @@ test('should position a shape', (t) => {
       id,
       name,
       color: 'red',
+      meta: {},
     },
     '1.0': {
       id,
       name,
       color: 'red',
+      meta: {},
     },
   };
 
@@ -40,16 +42,19 @@ test('should position a different shape', (t) => {
       id,
       name,
       color: 'red',
+      meta: {},
     },
     '1.0': {
       id,
       name,
       color: 'blue',
+      meta: {},
     },
     '2.0': {
       id,
       name,
       color: 'red',
+      meta: {},
     },
   };
 
@@ -65,11 +70,13 @@ test('should position a shape at a different position', (t) => {
       id,
       name,
       color: 'red',
+      meta: {},
     },
     3.1: {
       id,
       name,
       color: 'red',
+      meta: {},
     },
   };
 
@@ -87,26 +94,31 @@ test('should position several shapes', (t) => {
       id: carId,
       name: carName,
       color: 'red',
+      meta: {},
     },
     '1.0': {
       id: carId,
       name: carName,
       color: 'red',
+      meta: {},
     },
     0.1: {
       id: shipId,
       name: shipName,
       color: 'red',
+      meta: {},
     },
     1.1: {
       id: shipId,
       name: shipName,
       color: 'blue',
+      meta: {},
     },
     2.1: {
       id: shipId,
       name: shipName,
       color: 'red',
+      meta: {},
     },
   };
 

@@ -31,11 +31,13 @@ test('should keep non-targeted shapes', (t) => {
       id,
       name,
       color: 'red',
+      meta: {},
     },
     1.1: {
       id,
       name,
       color: 'red',
+      meta: {},
     },
   };
 

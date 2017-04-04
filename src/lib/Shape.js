@@ -23,7 +23,7 @@ export function getShapeMeta(shape) {
   };
 }
 
-export default function Shape(name, shape) {
+export default function Shape(name, shape, meta = {}) {
   if (!isString(name)) {
     throw new Error('Shape expects first argument to be a name (string)');
   }
@@ -37,6 +37,7 @@ export default function Shape(name, shape) {
             id,
             name,
             color,
+            meta,
           },
         }), {})
     ))
