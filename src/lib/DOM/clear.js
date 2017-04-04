@@ -1,7 +1,7 @@
 import { clearLoop } from './loop';
-import { removeKeyDownListener } from './keyboard';
+import { clearKeyDownListeners } from './keyboard';
 
 export default function clear() {
   clearLoop();
-  removeKeyDownListener();
+  clearKeyDownListeners();
 }

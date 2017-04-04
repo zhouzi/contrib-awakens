@@ -1,7 +1,7 @@
 /* global window */
 
 import get from 'lodash/get';
-import omitBy from 'lodash/omitBy';
+import forEach from 'lodash/forEach';
 
 let listeners = {};
 
@@ -23,20 +23,16 @@ export const keyCodes = {
   SPACEBAR: 32,
 };
 
-export function removeKeyDownListener(keyCode, callback) {
-  if (keyCode == null) {
-    listeners = {};
-  } else if (callback == null) {
-    listeners[keyCode] = [];
-  } else {
-    listeners[keyCode] = omitBy(listeners[keyCode], cb => cb === callback);
-  }
+export function clearKeyDownListeners() {
+  listeners = {};
 }
 
-export default function addKeyDownListener(keyCode, callback) {
-  if (listeners[keyCode] == null) {
-    listeners[keyCode] = [];
-  }
+export default function addKeyDownListener(callbacks) {
+  forEach(callbacks, (callback, keyCode) => {
+    if (listeners[keyCode] == null) {
+      listeners[keyCode] = [];
+    }
 
-  listeners[keyCode].push(callback);
+    listeners[keyCode].push(callback);
+  });
 }

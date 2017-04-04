@@ -5,6 +5,7 @@ import keys from 'lodash/keys';
 import head from 'lodash/head';
 import identity from 'lodash/identity';
 import coordKey from './coordKey';
+import { getShapeMeta } from './Shape';
 
 function getShapes(state) {
   const shapesMap = reduce(state, (acc, point, coord) => (
@@ -25,6 +26,16 @@ function getAxisCoords(shape, axis) {
   return keys(shape)
     .map(key => coordKey.keyToCoord(key)[index])
     .sort();
+}
+
+export function filterShapes(fn, name) {
+  return (state, shape) => {
+    if (getShapeMeta(shape).name === name) {
+      return fn(state, shape);
+    }
+
+    return state;
+  };
 }
 
 export default function reduceShapes(state, shapes, iteratee) {

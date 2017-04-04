@@ -7,10 +7,10 @@ import log from '../log';
 import getInitialState, { bounds } from '../../lib';
 import position from '../../lib/position';
 import move from '../../lib/move';
-import Shape, { getShapeMeta } from '../../lib/Shape';
+import Shape from '../../lib/Shape';
 import isOutOfBounds from '../../lib/isOutOfBounds';
-import removeShape from '../../lib/removeShape';
-import { reduceLeft } from '../../lib/reduce';
+import { removeOutOfBoundsShape } from '../../lib/removeShape';
+import { reduceLeft, filterShapes } from '../../lib/reduce';
 import render from '../../lib/DOM';
 import loop from '../../lib/DOM/loop';
 import onKeyDown, { keyCodes } from '../../lib/DOM/keyboard';
@@ -46,22 +46,9 @@ function createBrick() {
 }
 
 function moveBricks(state) {
-  return reduceLeft(state, (currentState, shape) => {
-    if (getShapeMeta(shape).name === 'brick') {
-      const nextState = move(currentState, shape, [-1, 0], () => null);
-      if (nextState == null) {
-        return nextState;
-      }
-
-      if (isOutOfBounds(nextState, shape) === 1) {
-        return removeShape(nextState, shape);
-      }
-
-      return nextState;
-    }
-
-    return currentState;
-  });
+  return reduceLeft(state, filterShapes((currentState, shape) => (
+    move(currentState, shape, [-1, 0], () => null)
+  ), 'brick'));
 }
 
 function spawnBrick(state) {
@@ -101,26 +88,29 @@ export default function (onGameOver) {
       return;
     }
 
+    state = reduceLeft(state, removeOutOfBoundsShape);
+
     if (random(1, 2) === 1) {
       state = spawnBrick(state);
     }
   }, initialDelay, minDelay, maxDelay);
 
   const speedDelay = 50;
-  onKeyDown(keyCodes.RIGHT, () => bricksLoop.decrementDelay(speedDelay));
-  onKeyDown(keyCodes.LEFT, () => bricksLoop.incrementDelay(speedDelay));
-
-  onKeyDown(keyCodes.TOP, () => {
-    state = moveCar(state, 'top');
-    if (state == null) {
-      gameOver();
-    }
-  });
-  onKeyDown(keyCodes.BOTTOM, () => {
-    state = moveCar(state, 'bottom');
-    if (state == null) {
-      gameOver();
-    }
+  onKeyDown({
+    [keyCodes.RIGHT]: () => bricksLoop.decrementDelay(speedDelay),
+    [keyCodes.LEFT]: () => bricksLoop.incrementDelay(speedDelay),
+    [keyCodes.TOP]: () => {
+      state = moveCar(state, 'top');
+      if (state == null) {
+        gameOver();
+      }
+    },
+    [keyCodes.BOTTOM]: () => {
+      state = moveCar(state, 'bottom');
+      if (state == null) {
+        gameOver();
+      }
+    },
   });
 
   loop(() => render(state));
