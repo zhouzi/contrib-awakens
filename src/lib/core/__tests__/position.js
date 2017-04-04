@@ -113,4 +113,11 @@ test('should position several shapes', (t) => {
   t.deepEqual(actual, expected);
 });
 
+test('should throw an error when positioning a shape over an other', (t) => {
+  const car1 = Car();
+  const car2 = Car();
+
+  t.throws(() => position(position(getInitialState(), car1, [0, 0]), car2, [0, 0]));
+});
+
 test.todo('position(position(state, car, [0, 0]), car, [0, 0]) should === state');
