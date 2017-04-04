@@ -1,20 +1,77 @@
 /* global window */
 
 import sample from 'lodash/sample';
-import random from 'lodash/random';
 import keys from 'lodash/keys';
+import head from 'lodash/head';
+import flatMap from 'lodash/flatMap';
+import range from 'lodash/range';
 import log from '../log';
-import getInitialState, { bounds } from '../../lib';
+import getInitialState, { bounds, directions } from '../../lib';
 import position from '../../lib/position';
 import move from '../../lib/move';
 import isOutOfBounds from '../../lib/isOutOfBounds';
-import removeShape from '../../lib/removeShape';
-import Shape from '../../lib/Shape';
+import { removeOutOfBoundsShape } from '../../lib/removeShape';
+import Shape, { getShapeMeta } from '../../lib/Shape';
+import { reduceLeft, filterShapes } from '../../lib/reduce';
+import getShapes from '../../lib/getShapes';
+import coordKey from '../../lib/coordKey';
 import render from '../../lib/DOM';
 import loop from '../../lib/DOM/loop';
 import onKeyDown, { keyCodes } from '../../lib/DOM/keyboard';
 import clear from '../../lib/DOM/clear';
 import colors from '../../lib/colors.json';
+
+const character = Shape('character', [
+  [colors.LOW],
+]);
+
+const carsColor = [
+  colors.HIGH,
+  colors.VERY_HIGH,
+];
+function createCar() {
+  const color = sample(carsColor);
+  const speed = sample(['slow', 'fast']);
+  const direction = sample(['top', 'bottom']);
+  return Shape('car', [
+    [color],
+    [color],
+  ], {
+    speed,
+    direction,
+  });
+}
+
+function moveCars(state, speed) {
+  return reduceLeft(state, filterShapes(
+    (nextState, shape) => {
+      const direction = getShapeMeta(shape).meta.direction;
+      const coord = directions[direction];
+      return move(nextState, shape, coord, () => null);
+    },
+    (shape) => {
+      const { name, meta } = getShapeMeta(shape);
+      return name === 'car' && meta.speed === speed;
+    },
+  ));
+}
+
+function getRandomAvailableX(state) {
+  const minX = bounds.x.min + 3;
+  const maxX = bounds.x.max - 3;
+  const cars = getShapes(state).filter(shape => getShapeMeta(shape).name === 'car');
+  const takenX = flatMap(cars, car => keys(car).map(coordKey.keyToCoord).map(head));
+  const availableX = range(minX, maxX).filter(x => takenX.indexOf(x) === -1);
+  return sample(availableX);
+}
+
+function spawnCar(state) {
+  const car = createCar();
+  const { direction } = getShapeMeta(car).meta;
+  const x = getRandomAvailableX(state);
+  const y = direction === 'top' ? bounds.y.max : bounds.y.min - 1;
+  return position(state, car, [x, y]);
+}
 
 export default function (onGameOver) {
   log(
@@ -24,134 +81,64 @@ export default function (onGameOver) {
     'Press left to move left',
   );
 
-  let state = getInitialState();
+  let state = position(
+    getInitialState(),
+    character,
+    [bounds.x.min + 1, bounds.y.middle],
+  );
 
-  const character = Shape('character', [
-    [colors.LOW],
-  ]);
-  state = position(state, character, [bounds.x.min + 1, bounds.y.middle]);
-
-  const carsColor = [
-    colors.HIGH,
-    colors.VERY_HIGH,
-  ];
-  function createCar() {
-    const color = sample(carsColor);
-    return Shape('car', [
-      [color],
-      [color],
-    ]);
+  function gameOver() {
+    clear();
+    onGameOver();
   }
-
-  const carsGroups = {
-    slow: [],
-    fast: [],
-  };
-  function moveCars(group) {
-    const cars = carsGroups[group];
-    for (let i = 0; i < cars.length; i += 1) {
-      const { direction, shape } = cars[i];
-
-      state = move(state, shape, [0, direction === 'top' ? -1 : 1], (s, collidingPoints) => {
-        if (collidingPoints.some(({ name }) => name === 'character')) {
-          return null;
-        }
-
-        return s;
-      });
-
-      if (state == null) {
-        clear();
-        onGameOver();
-        return;
-      }
-    }
-
-    carsGroups[group] = carsGroups[group].filter((car) => {
-      const shouldRemove = isOutOfBounds(state, car.shape) === 1;
-      if (shouldRemove) {
-        state = removeShape(state, car.shape);
-        return false;
-      }
-
-      return true;
-    });
-  }
-
-  function isFreeX(x) {
-    return keys(carsGroups).every(group => carsGroups[group].every(car => car.x !== x));
-  }
-
-  function getRandomAvailableX() {
-    const minX = bounds.x.min + 3;
-    const maxX = bounds.x.max - 3;
-    const availableX = [];
-
-    for (let x = minX; x <= maxX; x += 1) {
-      if (isFreeX(x)) {
-        availableX.push(x);
-      }
-    }
-
-    return sample(availableX);
-  }
-
-  function spawnCar() {
-    const shape = createCar();
-    const direction = random(0, 1) === 1 ? 'top' : 'bottom';
-    const group = sample(keys(carsGroups));
-    const x = getRandomAvailableX();
-    const y = direction === 'top' ? bounds.y.max : bounds.y.min - 1;
-
-    carsGroups[group].push({
-      shape,
-      direction,
-      x,
-    });
-
-    state = position(state, shape, [x, y]);
-  }
-
-  function safeCall(fn) {
-    return () => {
-      if (state == null) {
-        return;
-      }
-
-      fn();
-    };
-  }
-
-  loop(safeCall(() => moveCars('slow')), 500);
-  loop(safeCall(() => moveCars('fast')), 200);
-  loop(safeCall(() => spawnCar()), 250);
-  loop(() => render(state));
 
   function moveCharacter(direction) {
-    let coord;
-
-    if (direction === 'top') {
-      coord = [0, -1];
-    } else if (direction === 'right') {
-      coord = [1, 0];
-    } else if (direction === 'bottom') {
-      coord = [0, 1];
-    } else {
-      coord = [-1, 0];
-    }
-
+    const coord = directions[direction];
     const nextState = move(state, character, coord, () => null);
 
     if (nextState == null) {
-      clear();
-      onGameOver();
-    } else if (isOutOfBounds(nextState, character) === 0) {
+      state = null;
+      gameOver();
+      return;
+    }
+
+    if (isOutOfBounds(nextState, character) === 0) {
       state = nextState;
     }
   }
 
-  onKeyDown(keyCodes.TOP, () => moveCharacter('top'));
-  onKeyDown(keyCodes.RIGHT, () => moveCharacter('right'));
-  onKeyDown(keyCodes.BOTTOM, () => moveCharacter('bottom'));
-  onKeyDown(keyCodes.LEFT, () => moveCharacter('left'));
+  loop(() => {
+    state = moveCars(state, 'slow');
+
+    if (state == null) {
+      gameOver();
+      return;
+    }
+
+    state = reduceLeft(state, removeOutOfBoundsShape);
+  }, 500);
+
+  loop(() => {
+    state = moveCars(state, 'fast');
+
+    if (state == null) {
+      gameOver();
+      return;
+    }
+
+    state = reduceLeft(state, removeOutOfBoundsShape);
+  }, 250);
+
+  loop(() => {
+    state = spawnCar(state);
+  }, 250);
+
+  loop(() => render(state));
+
+  onKeyDown({
+    [keyCodes.TOP]: () => moveCharacter('top'),
+    [keyCodes.RIGHT]: () => moveCharacter('right'),
+    [keyCodes.BOTTOM]: () => moveCharacter('bottom'),
+    [keyCodes.LEFT]: () => moveCharacter('left'),
+  });
 }
