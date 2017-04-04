@@ -1,22 +1,15 @@
 import pickBy from 'lodash/pickBy';
 import keys from 'lodash/keys';
-import has from 'lodash/has';
+import get from 'lodash/get';
 import identity from 'lodash/identity';
 import { getShapeMeta } from './Shape';
 import position, { getShapeNewPosition } from './position';
 import removeShape from './removeShape';
 
-function getCollidingPoints(state, currentShape, [futureX, futureY]) {
+function getFutureCollidingPoints(state, currentShape, [futureX, futureY]) {
   const futureShape = getShapeNewPosition(currentShape, [futureX, futureY]);
-
   return keys(futureShape)
-    .map((coords) => {
-      if (has(state, coords)) {
-        return state[coords];
-      }
-
-      return null;
-    })
+    .map(coords => get(state, coords))
     .filter(identity);
 }
 
@@ -25,11 +18,11 @@ export default function move(state, shape, [incrementX, incrementY], callback = 
   const currentShape = pickBy(state, point => point.id === id);
 
   if (keys(currentShape).length === 0) {
-    throw new Error('move cannot move a shape that isn\'t on the grid');
+    throw new Error('move cannot move a shape that isn\'t in state');
   }
 
   const stateWithoutShape = removeShape(state, currentShape);
-  const collidingPoints = getCollidingPoints(
+  const collidingPoints = getFutureCollidingPoints(
     stateWithoutShape,
     currentShape,
     [incrementX, incrementY],

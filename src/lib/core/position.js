@@ -1,10 +1,11 @@
 import assign from 'lodash/assign';
 import mapKeys from 'lodash/mapKeys';
+import coordKey from './coordKey';
 
 export function getShapeNewPosition(shape, [newX, newY]) {
   return mapKeys(shape, (value, key) => {
-    const [x, y] = key.split('.').map(Number);
-    return `${x + newX}.${y + newY}`;
+    const [x, y] = coordKey.keyToCoord(key);
+    return coordKey.coordToKey([x + newX, y + newY]);
   });
 }
 

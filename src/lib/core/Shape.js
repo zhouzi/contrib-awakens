@@ -3,6 +3,7 @@ import assign from 'lodash/assign';
 import head from 'lodash/head';
 import keys from 'lodash/keys';
 import isString from 'lodash/isString';
+import coordKey from './coordKey';
 
 function getNonEmptyCells(cells) {
   return cells
@@ -32,7 +33,7 @@ export default function Shape(name, shape) {
     .map((cells, y) => (
       getNonEmptyCells(cells)
         .reduce((acc, { color, x }) => assign(acc, {
-          [`${x}.${y}`]: {
+          [coordKey.coordToKey([x, y])]: {
             id,
             name,
             color,

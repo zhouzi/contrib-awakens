@@ -3,6 +3,8 @@ import map from 'lodash/map';
 import merge from 'lodash/merge';
 import keys from 'lodash/keys';
 import head from 'lodash/head';
+import identity from 'lodash/identity';
+import coordKey from './coordKey';
 
 function getShapes(state) {
   const shapesMap = reduce(state, (acc, point, coord) => (
@@ -12,7 +14,7 @@ function getShapes(state) {
       },
     })
   ), {});
-  return map(shapesMap, (shape, id) => shape);
+  return map(shapesMap, identity);
 }
 
 function getAxisCoords(shape, axis) {
@@ -21,14 +23,13 @@ function getAxisCoords(shape, axis) {
   const index = axis === 'x' ? X : Y;
 
   return keys(shape)
-    .map(coord => coord.split('.')[index])
-    .map(Number)
+    .map(key => coordKey.keyToCoord(key)[index])
     .sort();
 }
 
 export default function reduceShapes(state, shapes, iteratee) {
   let nextState = state;
-  for (let i = 0; i < shapes.length; i++) {
+  for (let i = 0; i < shapes.length; i += 1) {
     const shape = shapes[i];
     nextState = iteratee(nextState, shape);
 
