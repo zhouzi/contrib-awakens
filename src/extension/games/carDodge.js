@@ -28,7 +28,7 @@ function moveCar(state, direction) {
     return null;
   }
 
-  if (isOutOfBounds(state, car) > 0) {
+  if (isOutOfBounds(nextState, car) > 0) {
     return state;
   }
 
