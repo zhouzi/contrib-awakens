@@ -1,19 +1,6 @@
-import keys from 'lodash/keys';
-import head from 'lodash/head';
 import isString from 'lodash/isString';
-import coordKey from './coordKey';
-import { getShapeMeta } from './Shape';
+import { getShapeMeta, getShapeBounds } from './Shape';
 import getShapes from './getShapes';
-
-function getAxisCoords(shape, axis) {
-  const X = 0;
-  const Y = 1;
-  const index = axis === 'x' ? X : Y;
-
-  return keys(shape)
-    .map(key => coordKey.keyToCoord(key)[index])
-    .sort();
-}
 
 export function filterShapes(fn, filter) {
   const filterFn =
@@ -43,32 +30,24 @@ export default function reduceShapes(state, shapes, iteratee) {
 
 export function reduceTop(state, iteratee) {
   const shapes = getShapes(state)
-    .sort((a, b) => (
-      head(getAxisCoords(a, 'y')) - head(getAxisCoords(b, 'y'))
-    ));
+    .sort((a, b) => getShapeBounds(a).y1 - getShapeBounds(b).y1);
   return reduceShapes(state, shapes, iteratee);
 }
 
 export function reduceRight(state, iteratee) {
   const shapes = getShapes(state)
-    .sort((a, b) => (
-      head(getAxisCoords(b, 'x')) - head(getAxisCoords(a, 'x'))
-    ));
+    .sort((a, b) => getShapeBounds(b).x1 - getShapeBounds(a).x1);
   return reduceShapes(state, shapes, iteratee);
 }
 
 export function reduceBottom(state, iteratee) {
   const shapes = getShapes(state)
-    .sort((a, b) => (
-      head(getAxisCoords(b, 'y')) - head(getAxisCoords(a, 'y'))
-    ));
+    .sort((a, b) => getShapeBounds(b).y1 - getShapeBounds(a).y1);
   return reduceShapes(state, shapes, iteratee);
 }
 
 export function reduceLeft(state, iteratee) {
   const shapes = getShapes(state)
-    .sort((a, b) => (
-      head(getAxisCoords(a, 'x')) - head(getAxisCoords(b, 'x'))
-    ));
+    .sort((a, b) => getShapeBounds(a).x1 - getShapeBounds(b).x1);
   return reduceShapes(state, shapes, iteratee);
 }

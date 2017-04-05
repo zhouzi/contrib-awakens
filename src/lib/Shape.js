@@ -3,6 +3,7 @@ import assign from 'lodash/assign';
 import head from 'lodash/head';
 import keys from 'lodash/keys';
 import isString from 'lodash/isString';
+import last from 'lodash/last';
 import coordKey from './coordKey';
 
 function getNonEmptyCells(cells) {
@@ -21,6 +22,33 @@ export function getShapeMeta(shape) {
     name,
     length,
     meta,
+  };
+}
+
+export function getShapeAxisCoords(shape, axis) {
+  const X = 0;
+  const Y = 1;
+  const index = axis === 'x' ? X : Y;
+
+  return keys(shape)
+    .map(key => coordKey.keyToCoord(key)[index])
+    .sort();
+}
+
+export function getShapeBounds(shape) {
+  const xs = getShapeAxisCoords(shape, 'x');
+  const x1 = head(xs);
+  const x2 = last(xs);
+
+  const ys = getShapeAxisCoords(shape, 'y');
+  const y1 = head(ys);
+  const y2 = last(ys);
+
+  return {
+    x1,
+    x2,
+    y1,
+    y2,
   };
 }
 
