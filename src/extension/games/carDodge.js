@@ -58,6 +58,20 @@ function spawnBrick(state) {
   return position(state, brick, [x, y]);
 }
 
+function moveAndSpawnBricks(state) {
+  const nextState = moveBricks(state);
+
+  if (nextState == null) {
+    return null;
+  }
+
+  if (random(1, 2) === 1) {
+    return spawnBrick(nextState);
+  }
+
+  return nextState;
+}
+
 export default function (onGameOver) {
   log(
     'Press top to move top',
@@ -81,37 +95,23 @@ export default function (onGameOver) {
   const maxDelay = 800;
   const initialDelay = Math.round((maxDelay - minDelay) / 2);
   const bricksLoop = loop(() => {
-    state = moveBricks(state);
-
-    if (state == null) {
-      gameOver();
-      return;
-    }
-
-    state = reduceLeft(state, removeOutOfBoundsShape);
-
-    if (random(1, 2) === 1) {
-      state = spawnBrick(state);
-    }
+    state = moveAndSpawnBricks(state);
   }, initialDelay, minDelay, maxDelay);
 
   const speedDelay = 50;
   onKeyDown({
     [keyCodes.RIGHT]: () => bricksLoop.decrementDelay(speedDelay),
     [keyCodes.LEFT]: () => bricksLoop.incrementDelay(speedDelay),
-    [keyCodes.TOP]: () => {
-      state = moveCar(state, 'top');
-      if (state == null) {
-        gameOver();
-      }
-    },
-    [keyCodes.BOTTOM]: () => {
-      state = moveCar(state, 'bottom');
-      if (state == null) {
-        gameOver();
-      }
-    },
+    [keyCodes.TOP]: () => { state = moveCar(state, 'top'); },
+    [keyCodes.BOTTOM]: () => { state = moveCar(state, 'bottom'); },
   });
 
-  loop(() => render(state));
+  loop(() => {
+    if (state == null) {
+      gameOver();
+    } else {
+      state = reduceLeft(state, removeOutOfBoundsShape);
+      render(state);
+    }
+  });
 }
