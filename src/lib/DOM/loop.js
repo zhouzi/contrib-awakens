@@ -5,7 +5,11 @@ let listeners = [];
 
 (function loop() {
   window.requestAnimationFrame((timestamp) => {
-    listeners.forEach((listener) => {
+    // the while loop ensure a listener that clears the loop
+    // prevent other listeners from being called
+    let i = 0;
+    while (listeners.length > i) {
+      const listener = listeners[i];
       if (listener.startTimestamp == null) {
         listener.startTimestamp = timestamp;
       }
@@ -15,7 +19,9 @@ let listeners = [];
         listener.lastFrameTimestamp = timestamp;
         listener.callback(currentTimestamp);
       }
-    });
+
+      i++;
+    }
 
     loop();
   });
