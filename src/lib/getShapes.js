@@ -9,6 +9,10 @@ export function getShape(state, id) {
 }
 
 export default function getShapes(state) {
+  if (state == null) {
+    throw new Error('getShapes cannot get shapes from a null state');
+  }
+
   const shapesMap = reduce(state, (acc, point, coord) => (
     merge({}, acc, {
       [point.id]: {
