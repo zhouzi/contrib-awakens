@@ -73,6 +73,21 @@ function spawnCar(state) {
   return position(state, car, [x, y]);
 }
 
+function moveCharacter(state, direction) {
+  const coord = directions[direction];
+  const nextState = move(state, character, coord, () => null);
+
+  if (nextState == null) {
+    return null;
+  }
+
+  if (isOutOfBounds(nextState, character) === 0) {
+    return nextState;
+  }
+
+  return state;
+}
+
 export default function (onGameOver) {
   log(
     'Press top to move top',
@@ -92,53 +107,31 @@ export default function (onGameOver) {
     onGameOver();
   }
 
-  function moveCharacter(direction) {
-    const coord = directions[direction];
-    const nextState = move(state, character, coord, () => null);
-
-    if (nextState == null) {
-      state = null;
+  loop(() => {
+    if (state == null) {
       gameOver();
-      return;
+    } else {
+      state = reduceLeft(state, removeOutOfBoundsShape);
+      render(state);
     }
-
-    if (isOutOfBounds(nextState, character) === 0) {
-      state = nextState;
-    }
-  }
+  });
 
   loop(() => {
     state = moveCars(state, 'slow');
-
-    if (state == null) {
-      gameOver();
-      return;
-    }
-
-    state = reduceLeft(state, removeOutOfBoundsShape);
   }, 500);
 
   loop(() => {
     state = moveCars(state, 'fast');
-
-    if (state == null) {
-      gameOver();
-      return;
-    }
-
-    state = reduceLeft(state, removeOutOfBoundsShape);
   }, 250);
 
   loop(() => {
     state = spawnCar(state);
   }, 250);
 
-  loop(() => render(state));
-
   onKeyDown({
-    [keyCodes.TOP]: () => moveCharacter('top'),
-    [keyCodes.RIGHT]: () => moveCharacter('right'),
-    [keyCodes.BOTTOM]: () => moveCharacter('bottom'),
-    [keyCodes.LEFT]: () => moveCharacter('left'),
+    [keyCodes.TOP]: () => { state = moveCharacter(state, 'top'); },
+    [keyCodes.RIGHT]: () => { state = moveCharacter(state, 'right'); },
+    [keyCodes.BOTTOM]: () => { state = moveCharacter(state, 'bottom'); },
+    [keyCodes.LEFT]: () => { state = moveCharacter(state, 'left'); },
   });
 }
