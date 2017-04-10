@@ -5,7 +5,7 @@
     "test": "ava",
     "lint": "eslint --ext .js --ignore-pattern dist --fix .",
     "dev": "webpack --watch -d",
-    "build": "webpack -p -d"
+    "build": "webpack -p"
   },
   "ava": {
     "require": "babel-register",
