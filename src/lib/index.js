@@ -89,16 +89,6 @@ function getShape(state, shape) {
   return new Immutable(pickBy(state, point => point.id === id));
 }
 
-export function move(state, shape, [x, y], callback = identity) {
-  const shapeInState = getShape(state, shape);
-  return position(
-    remove(state, shapeInState),
-    shapeInState,
-    [x, y],
-    (_, ...args) => callback(state, ...args),
-  );
-}
-
 export const bounds = {
   x1: 0,
   x2: 52,
@@ -187,6 +177,30 @@ export function reduceLeft(state, reducer) {
     aBounds.x1 - bBounds.x1
   ));
   return reduceShapes(state, shapes, reducer);
+}
+
+function removeOutOfBoundsShapes(state) {
+  return reduceLeft(state, (acc, shape) => (
+    isOutOfBounds(acc, shape) === 1
+      ? remove(acc, shape)
+      : acc
+  ));
+}
+
+export function move(state, shape, [x, y], callback = identity) {
+  const shapeInState = getShape(state, shape);
+  const nextState = position(
+    remove(state, shapeInState),
+    shapeInState,
+    [x, y],
+    (_, ...args) => callback(state, ...args),
+  );
+
+  if (nextState == null) {
+    return null;
+  }
+
+  return removeOutOfBoundsShapes(nextState);
 }
 
 export default function getInitialState() {
