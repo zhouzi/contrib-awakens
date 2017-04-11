@@ -35,7 +35,7 @@ function parseCoord(coord) {
   return coord.split('.').map(Number);
 }
 
-function stringifyCoord([x, y]) {
+export function stringifyCoord([x, y]) {
   return `${x}.${y}`;
 }
 
