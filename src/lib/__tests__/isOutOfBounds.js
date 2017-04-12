@@ -53,3 +53,11 @@ test('should return 0 when on the last column', (t) => {
 
   t.is(actual, expected);
 });
+
+test('should return 1 if shape is not in the state', (t) => {
+  const boat = Boat();
+  const actual = isOutOfBounds(getInitialState(), boat);
+  const expected = 1;
+
+  t.is(actual, expected);
+});

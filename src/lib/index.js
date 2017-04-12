@@ -96,10 +96,21 @@ export const bounds = {
   y2: 6,
 };
 
+export const directions = {
+  TOP: [0, -1],
+  RIGHT: [1, 0],
+  BOTTOM: [0, 1],
+  LEFT: [-1, 0],
+};
+
 export function isOutOfBounds(state, shape) {
   const shapeInState = getShape(state, shape);
   const coords = keys(shapeInState);
   const total = coords.length;
+  if (total === 0) {
+    return 1;
+  }
+
   const outOfBounds = coords.filter((coord) => {
     const [x, y] = parseCoord(coord);
     return !inRange(x, bounds.x1, (bounds.x2 + 1)) || !inRange(y, bounds.y1, (bounds.y2 + 1));
