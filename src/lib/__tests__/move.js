@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import test from 'ava';
 import getInitialState, { position, move } from '../';
 import { Car } from './fixtures';
@@ -85,13 +84,4 @@ test('should move a shape relative to its current position', (t) => {
   ];
 
   t.deepEqual(actual, expected);
-});
-
-test('should remove shapes that move 100% out of bounds', (t) => {
-  const car = Car();
-  const state = move(position(getInitialState(), car, [-1, 0]), car, [-1, 0]);
-  const actual = _.keys(state).length;
-  const expected = 0;
-
-  t.is(actual, expected);
 });

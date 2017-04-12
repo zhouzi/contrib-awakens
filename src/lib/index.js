@@ -9,6 +9,8 @@ import pickBy from 'lodash/pickBy';
 import reduce from 'lodash/reduce';
 import map from 'lodash/map';
 import last from 'lodash/last';
+import assign from 'lodash/assign';
+import get from 'lodash/get';
 
 export function Shape(name, schema, meta = {}) {
   const id = uniqueId(`${name}-`);
@@ -72,6 +74,10 @@ export function getShapeId(shape) {
   return head(values(shape)).id;
 }
 
+export function getShapeName(shape) {
+  return head(values(shape)).name;
+}
+
 export function remove(state, shape) {
   const id = getShapeId(shape);
   return keys(state).reduce((acc, coord) => {
@@ -128,12 +134,12 @@ export function isOutOfBounds(state, shape) {
 
 function getShapes(state) {
   const shapesMap = reduce(state, (acc, point, coord) => (
-    acc.merge({
-      [point.id]: {
+    assign(acc, {
+      [point.id]: assign(get(acc, point.id, {}), {
         [coord]: point,
-      },
-    }, { deep: true })
-  ), new Immutable({}));
+      }),
+    })
+  ), {});
   return map(shapesMap, identity);
 }
 
@@ -198,7 +204,7 @@ export function reduceLeft(state, reducer) {
   return reduceShapes(state, shapes, reducer);
 }
 
-function removeOutOfBoundsShapes(state) {
+export function removeOutOfBoundsShapes(state) {
   return reduceLeft(state, (acc, shape) => (
     isOutOfBounds(acc, shape) === 1
       ? remove(acc, shape)
@@ -219,7 +225,7 @@ export function move(state, shape, [x, y], callback = identity) {
     return null;
   }
 
-  return removeOutOfBoundsShapes(nextState);
+  return nextState;
 }
 
 export default function getInitialState() {
