@@ -102,7 +102,7 @@ export function isOutOfBounds(state, shape) {
   const total = coords.length;
   const outOfBounds = coords.filter((coord) => {
     const [x, y] = parseCoord(coord);
-    return !inRange(x, bounds.x1, bounds.x2) || !inRange(y, bounds.y1, bounds.y2);
+    return !inRange(x, bounds.x1, (bounds.x2 + 1)) || !inRange(y, bounds.y1, (bounds.y2 + 1));
   }).length;
   return Number((outOfBounds / total).toFixed(1));
 }

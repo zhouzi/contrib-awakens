@@ -1,5 +1,5 @@
 import test from 'ava';
-import getInitialState, { position, isOutOfBounds } from '../';
+import getInitialState, { position, isOutOfBounds, bounds } from '../';
 import { Car, Boat } from './fixtures';
 
 function positionCar(car, [x, y] = [0, 0]) {
@@ -34,6 +34,22 @@ test('should return 0.3 when 1/3 of the shape is out of bounds', (t) => {
   const boat = Boat();
   const actual = isOutOfBounds(position(getInitialState(), boat, [-1, 0]), boat);
   const expected = 0.3;
+
+  t.is(actual, expected);
+});
+
+test('should return 0 when on the last row', (t) => {
+  const boat = Boat();
+  const actual = isOutOfBounds(position(getInitialState(), boat, [0, bounds.y2]), boat);
+  const expected = 0;
+
+  t.is(actual, expected);
+});
+
+test('should return 0 when on the last column', (t) => {
+  const boat = Boat();
+  const actual = isOutOfBounds(position(getInitialState(), boat, [bounds.x2 - 2, 0]), boat);
+  const expected = 0;
 
   t.is(actual, expected);
 });
