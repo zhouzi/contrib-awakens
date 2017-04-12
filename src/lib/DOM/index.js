@@ -5,6 +5,7 @@ import has from 'lodash/has';
 import assign from 'lodash/assign';
 import reduce from 'lodash/reduce';
 import get from 'lodash/get';
+import noop from 'lodash/noop';
 import { bounds, stringifyCoord } from '../';
 import colors from '../colors.json';
 
@@ -61,7 +62,7 @@ export const keyCodes = {
   TOP: 38,
   RIGHT: 39,
   BOTTOM: 40,
-  lEFT: 37,
+  LEFT: 37,
   SPACEBAR: 32,
 };
 
@@ -74,13 +75,27 @@ export function onKeyDown(map) {
   ), listeners);
 }
 
-export function clear() {
+let loopCallback = noop;
+function createLoop() {
+  window.requestAnimationFrame(() => {
+    loopCallback();
+    createLoop();
+  });
+}
+
+export function loop(callback) {
+  loopCallback = callback;
+}
+
+function clear() {
   listeners = {};
+  loopCallback = noop;
 }
 
 export function setup() {
   addMissingCells();
   removeUnnecessaryColumns();
+  createLoop();
 
   window.document.addEventListener('keydown', (event) => {
     const { keyCode } = event;
@@ -93,6 +108,11 @@ export function setup() {
   });
 }
 
+let gameOverCallback = noop;
+export function onGameOver(fn) {
+  gameOverCallback = fn;
+}
+
 let lastRenderedState;
 export default function render(state) {
   if (lastRenderedState === state) {
@@ -102,6 +122,8 @@ export default function render(state) {
   lastRenderedState = state;
 
   if (state == null) {
+    clear();
+    gameOverCallback();
     return;
   }
 

@@ -10,6 +10,7 @@ jsdom.env('', (err, window) => {
     return;
   }
 
+  window.requestAnimationFrame = _.noop;// eslint-disable-line no-param-reassign
   global.window = window;
 
   test.beforeEach(() => {
