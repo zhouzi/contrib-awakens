@@ -2,6 +2,9 @@
 
 import toArray from 'lodash/toArray';
 import has from 'lodash/has';
+import assign from 'lodash/assign';
+import reduce from 'lodash/reduce';
+import get from 'lodash/get';
 import { bounds, stringifyCoord } from '../';
 import colors from '../colors.json';
 
@@ -28,7 +31,7 @@ function addMissingCells() {
   const secondCell = firstCol.children[1];
   const secondCellY = Number(secondCell.getAttribute('y'));
   const yIncrement = secondCellY - firstCellY;
-  const length = bounds.y2 + 1;
+  const length = bounds.y.length;
 
   cols.forEach((col) => {
     const cells = col.children;
@@ -48,15 +51,46 @@ function addMissingCells() {
 
 function removeUnnecessaryColumns() {
   const cols = getCols();
-  const unnecessaryCols = cols.slice(bounds.x2 + 1);
+  const unnecessaryCols = cols.slice(bounds.x.length);
   unnecessaryCols.forEach((col) => {
     col.parentElement.removeChild(col);
   });
 }
 
+export const keyCodes = {
+  TOP: 38,
+  RIGHT: 39,
+  BOTTOM: 40,
+  lEFT: 37,
+  SPACEBAR: 32,
+};
+
+let listeners = {};
+export function onKeyDown(map) {
+  listeners = reduce(map, (acc, listener, keyCode) => (
+    assign(acc, {
+      [keyCode]: get(acc, keyCode, []).concat(listener),
+    })
+  ), listeners);
+}
+
+export function clear() {
+  listeners = {};
+}
+
 export function setup() {
   addMissingCells();
   removeUnnecessaryColumns();
+
+  window.document.addEventListener('keydown', (event) => {
+    const { keyCode } = event;
+    if (has(listeners, keyCode)) {
+      event.preventDefault();
+      listeners[keyCode].forEach((listener) => {
+        listener();
+      });
+    }
+  });
 }
 
 let lastRenderedState;

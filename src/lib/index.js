@@ -90,10 +90,18 @@ function getShape(state, shape) {
 }
 
 export const bounds = {
-  x1: 0,
-  x2: 52,
-  y1: 0,
-  y2: 6,
+  x: {
+    min: 0,
+    max: 52,
+    length: 53,
+    middle: 26,
+  },
+  y: {
+    min: 0,
+    max: 6,
+    length: 7,
+    middle: 3,
+  },
 };
 
 export const directions = {
@@ -113,7 +121,7 @@ export function isOutOfBounds(state, shape) {
 
   const outOfBounds = coords.filter((coord) => {
     const [x, y] = parseCoord(coord);
-    return !inRange(x, bounds.x1, (bounds.x2 + 1)) || !inRange(y, bounds.y1, (bounds.y2 + 1));
+    return !inRange(x, bounds.x.min, bounds.x.length) || !inRange(y, bounds.y.min, bounds.y.length);
   }).length;
   return Number((outOfBounds / total).toFixed(1));
 }
