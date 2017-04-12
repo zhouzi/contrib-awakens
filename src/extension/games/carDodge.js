@@ -21,13 +21,11 @@ export default function createCarDodge() {
     [colors.LIGHT, colors.LIGHT],
   ]);
   let state = position(getInitialState(), car, [1, Math.round(bounds.y.middle)]);
-  render(state);
 
   function moveCar(direction) {
     const nextState = move(state, car, direction);
     if (isOutOfBounds(nextState, car) === 0) {
       state = nextState;
-      render(state);
     }
   }
 
@@ -61,10 +59,12 @@ export default function createCarDodge() {
     }
 
     moveBricks();
-    render(state);
-  }, 300, 100, 500);
+  }, 450, 100, 800);
 
-  loop(spawnAndMoveBricks);
+  loop(() => {
+    spawnAndMoveBricks();
+    render(state);
+  });
 
   onKeyDown({
     [keyCodes.TOP]: moveCar.bind(null, directions.TOP),
