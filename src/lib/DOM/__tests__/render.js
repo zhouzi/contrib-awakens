@@ -4,7 +4,7 @@ import jsdom from 'jsdom';
 import { resetHtml, getCols, getCellColor } from './fixtures';
 import getInitialState, { position } from '../../';
 import { Car } from '../../__tests__/fixtures';
-import render from '../';
+import render, { onGameOver } from '../';
 import colors from '../../colors.json';
 
 jsdom.env('', (err, window) => {
@@ -47,5 +47,24 @@ jsdom.env('', (err, window) => {
     ];
 
     t.deepEqual(actual, expected);
+  });
+
+  test('should not fail to render a null state', (t) => {
+    render(getInitialState());
+    render(null);
+  });
+
+  test('should call game over callback when rendering null state', (t) => {
+    let calls = 0;
+    onGameOver(() => {
+      calls += 1;
+    });
+    render(getInitialState());
+    render(null);
+
+    const actual = calls;
+    const expected = 1;
+
+    t.is(actual, expected);
   });
 });
