@@ -1,10 +1,12 @@
 import sample from 'lodash/sample';
-import { setup, onGameOver } from '../lib/DOM';
+import { isPlayable, setup, onGameOver } from '../lib/DOM';
 import games from './games';
 
-setup();
+if (isPlayable()) {
+  setup();
 
-const createGame = sample(games);
+  const createGame = sample(games);
 
-onGameOver(createGame);
-createGame();
+  onGameOver(createGame);
+  createGame();
+}
