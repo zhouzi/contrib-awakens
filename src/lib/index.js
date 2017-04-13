@@ -33,7 +33,7 @@ export function Shape(name, schema, meta = {}) {
     }), new Immutable({}));
 }
 
-function parseCoord(coord) {
+export function parseCoord(coord) {
   return coord.split('.').map(Number);
 }
 
@@ -76,6 +76,10 @@ export function getShapeId(shape) {
 
 export function getShapeName(shape) {
   return head(values(shape)).name;
+}
+
+export function getShapeMeta(shape) {
+  return head(values(shape)).meta;
 }
 
 export function remove(state, shape) {
@@ -132,7 +136,7 @@ export function isOutOfBounds(state, shape) {
   return Number((outOfBounds / total).toFixed(1));
 }
 
-function getShapes(state) {
+export function getShapes(state) {
   const shapesMap = reduce(state, (acc, point, coord) => (
     assign(acc, {
       [point.id]: assign(get(acc, point.id, {}), {
