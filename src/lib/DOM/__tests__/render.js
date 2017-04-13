@@ -49,7 +49,7 @@ jsdom.env('', (err, window) => {
     t.deepEqual(actual, expected);
   });
 
-  test('should not fail to render a null state', (t) => {
+  test('should not fail to render a null state', () => {
     render(getInitialState());
     render(null);
   });
