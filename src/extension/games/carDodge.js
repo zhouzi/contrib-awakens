@@ -15,6 +15,7 @@ import getInitialState, {
 import throttle from '../../lib/throttle';
 import render, { loop, onKeyDown, keyCodes } from '../../lib/DOM';
 import colors from '../../lib/colors.json';
+import sometimes from '../../lib/sometimes';
 
 export default function createCarDodge() {
   const car = Shape('car', [
@@ -37,12 +38,12 @@ export default function createCarDodge() {
     const size = random(1, 2);
     return Shape('brick', times(size, () => [color]));
   }
-  function spawnBrick() {
+  const spawnBrick = sometimes(() => {
     const brick = createBrick();
     const x = bounds.x.max;
     const y = random(bounds.y.min, bounds.y.max);
     state = position(state, brick, [x, y]);
-  }
+  }, 1, 2);
   function moveBricks() {
     state = reduceLeft(state, (acc, shape) => {
       if (getShapeName(shape) === 'brick') {
@@ -54,11 +55,11 @@ export default function createCarDodge() {
     state = removeOutOfBoundsShapes(state);
   }
   const spawnAndMoveBricks = throttle(() => {
-    if (random(1, 3) === 1) {
+    moveBricks();
+
+    if (state != null) {
       spawnBrick();
     }
-
-    moveBricks();
   }, 450, 100, 800);
 
   loop(() => {
