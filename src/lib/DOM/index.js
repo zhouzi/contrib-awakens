@@ -66,13 +66,22 @@ export const keyCodes = {
   SPACEBAR: 32,
 };
 
-let listeners = {};
-export function onKeyDown(map) {
-  listeners = reduce(map, (acc, listener, keyCode) => (
+function addListeners(listeners, initialValue) {
+  return reduce(listeners, (acc, listener, keyCode) => (
     assign(acc, {
       [keyCode]: get(acc, keyCode, []).concat(listener),
     })
-  ), listeners);
+  ), initialValue);
+}
+
+let keyDownListeners = {};
+export function onKeyDown(map) {
+  keyDownListeners = addListeners(map, keyDownListeners);
+}
+
+let keyUpListeners = {};
+export function onKeyUp(map) {
+  keyUpListeners = addListeners(map, keyUpListeners);
 }
 
 let loopCallback = noop;
@@ -88,16 +97,13 @@ export function loop(callback) {
 }
 
 function clear() {
-  listeners = {};
+  keyDownListeners = {};
   loopCallback = noop;
 }
 
-export function setup() {
-  addMissingCells();
-  removeUnnecessaryColumns();
-  createLoop();
-
-  window.document.addEventListener('keydown', (event) => {
+function triggerListeners(getListeners) {
+  return (event) => {
+    const listeners = getListeners();
     const { keyCode } = event;
     if (has(listeners, keyCode)) {
       event.preventDefault();
@@ -105,7 +111,16 @@ export function setup() {
         listener();
       });
     }
-  });
+  };
+}
+
+export function setup() {
+  addMissingCells();
+  removeUnnecessaryColumns();
+  createLoop();
+
+  window.document.addEventListener('keydown', triggerListeners(() => keyDownListeners));
+  window.document.addEventListener('keyup', triggerListeners(() => keyUpListeners));
 }
 
 let gameOverCallback = noop;
