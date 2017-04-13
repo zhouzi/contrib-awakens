@@ -1,17 +1,17 @@
+import head from 'lodash/head';
+
 export default function throttle(fn, delay, min = delay, max = delay) {
   let wait = delay;
   let lastCall = 0;
-  let lastReturnValue;
 
   function throttled(...args) {
     const now = Date.now();
     if (now - lastCall >= wait) {
       lastCall = now;
-      lastReturnValue = fn(...args);
-      return lastReturnValue;
+      return fn(...args);
     }
 
-    return lastReturnValue;
+    return head(args);
   }
 
   throttled.decreaseDelay = (decrease) => {
