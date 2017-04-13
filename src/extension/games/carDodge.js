@@ -52,12 +52,12 @@ export default function createCarDodge() {
 
       return acc;
     });
-    state = removeOutOfBoundsShapes(state);
   }
   const spawnAndMoveBricks = throttle(() => {
     moveBricks();
 
     if (state != null) {
+      state = removeOutOfBoundsShapes(state);
       spawnBrick();
     }
   }, 450, 100, 800);
