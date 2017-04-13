@@ -232,6 +232,20 @@ export function move(state, shape, [x, y], callback = identity) {
   return nextState;
 }
 
+export function pipeline(fns, initialResult, done = identity) {
+  let result = initialResult;
+  for (let i = 0; i < fns.length; i += 1) {
+    if (result == null) {
+      return done(null);
+    }
+
+    const fn = fns[i];
+    result = fn(result);
+  }
+
+  return done(result);
+}
+
 export default function getInitialState() {
   return new Immutable({});
 }
