@@ -20,7 +20,7 @@ export default function createCarDodge() {
   const car = Shape('car', [
     [colors.LIGHT, colors.LIGHT],
   ]);
-  let state = position(getInitialState(), car, [1, Math.round(bounds.y.middle)]);
+  let state = position(getInitialState(), car, [1, bounds.y.middle]);
 
   function moveCar(direction) {
     const nextState = move(state, car, direction);
