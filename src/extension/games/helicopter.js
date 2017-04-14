@@ -33,25 +33,25 @@ function moveHelicopter(state, direction) {
   return state;
 }
 
-function createBrick(height) {
-  return Shape('brick', times(height, () => [colors.DARKER]));
+function createBrick(height, color) {
+  return Shape('brick', times(height, () => [color]));
 }
 
 function spawnBrick(state) {
-  const minHeight = 1;
-
-  const topMaxHeight = 4;
-  const topBrickHeight = random(minHeight, topMaxHeight);
-
-  const bottomMaxHeight = Math.max(minHeight, bounds.y.middle - topBrickHeight);
-  const bottomBrickHeight = random(minHeight, bottomMaxHeight);
   return pipeline([
     (acc) => {
-      const topBrick = createBrick(topBrickHeight);
+      const topBrickHeight = random(0, 1);
+
+      if (topBrickHeight === 0) {
+        return acc;
+      }
+
+      const topBrick = createBrick(topBrickHeight, colors.DARK);
       return position(acc, topBrick, [bounds.x.max, bounds.y.min], () => null);
     },
     (acc) => {
-      const bottomBrick = createBrick(bottomBrickHeight);
+      const bottomBrickHeight = random(1, 2);
+      const bottomBrick = createBrick(bottomBrickHeight, colors.DARKER);
       return position(acc, bottomBrick, [
         bounds.x.max,
         bounds.y.max - (bottomBrickHeight - 1),
@@ -76,22 +76,36 @@ export default function createHelicopter() {
     bounds.y.middle - 1,
   ]);
 
-  let inertia = -1;
-  const makeHelicopterFall = throttle((acc) => {
-    if (inertia > -1) {
-      inertia -= 1;
-      return acc;
-    }
-    return moveHelicopter(acc, directions.BOTTOM);
-  }, 500);
   const spawnAndMoveBricks = throttle(acc => pipeline([
     moveBricks,
     spawnBrick,
   ], acc), 400, 100, 800);
 
+  const maxSpeed = 2;
+  const minSpeed = 0;
+  let speed = minSpeed;
+  let isAccelerating = false;
+
+  const gravity = throttle((acc) => {
+    if (isAccelerating) {
+      if (speed < maxSpeed) {
+        speed += 1;
+        gravity.decreaseDelay(50);
+      }
+    } else {
+      if (speed > minSpeed) {
+        speed -= 1;
+        gravity.increaseDelay(50);
+      }
+    }
+
+    const direction = speed > 0 ? directions.TOP : directions.BOTTOM;
+    return moveHelicopter(acc, direction);
+  }, 300, 200, 300);
+
   loop(() => {
     state = pipeline([
-      makeHelicopterFall,
+      gravity,
       removeOutOfBoundsShapes,
       spawnAndMoveBricks,
     ], state);
@@ -99,17 +113,12 @@ export default function createHelicopter() {
   });
 
   onKeyDown({
-    [keyCodes.SPACEBAR]: () => {
-      inertia = 1;
-      state = moveHelicopter(state, directions.TOP);
-    },
+    [keyCodes.SPACEBAR]: () => { isAccelerating = true; },
     [keyCodes.RIGHT]: () => spawnAndMoveBricks.decreaseDelay(50),
     [keyCodes.LEFT]: () => spawnAndMoveBricks.increaseDelay(50),
   });
 
   onKeyUp({
-    [keyCodes.SPACEBAR]: () => {
-      inertia = 0;
-    },
+    [keyCodes.SPACEBAR]: () => { isAccelerating = false; },
   });
 }
