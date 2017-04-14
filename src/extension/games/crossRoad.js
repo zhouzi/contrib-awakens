@@ -87,7 +87,7 @@ export default function createCrossRoad() {
 
   const moveSlowCars = throttle(moveCarsWithSpeed('slow'), 500);
   const moveFastCars = throttle(moveCarsWithSpeed('fast'), 250);
-  const throttledSpawnCar = throttle(spawnCar, 500);
+  const throttledSpawnCar = throttle(spawnCar, 300);
   loop(() => {
     state = pipeline([
       moveSlowCars,
