@@ -1,70 +1,63 @@
-const test = require('ava');
-const { Car, Ship } = require('./fixtures');
-const { default: getInitialState, bounds } = require('../');
-const position = require('../position').default;
-const isOutOfBounds = require('../isOutOfBounds').default;
+import test from 'ava';
+import getInitialState, { position, isOutOfBounds, bounds } from '../';
+import { Car, Boat } from './fixtures';
 
-function positionShape(shape, [x, y] = [0, 0]) {
-  return position(getInitialState(), shape, [x, y]);
+function positionCar(car, [x, y] = [0, 0]) {
+  return position(getInitialState(), car, [x, y]);
 }
 
-test('should expose a function', (t) => {
-  const actual = typeof isOutOfBounds;
-  const expected = 'function';
-
-  t.is(actual, expected);
-});
-
-test('should return an int', (t) => {
+test('should return 0 when the shape is within bounds', (t) => {
   const car = Car();
-  const state = positionShape(car);
-  const actual = typeof isOutOfBounds(state, car);
-  const expected = 'number';
-
-  t.is(actual, expected);
-});
-
-test('should return 0 if the shape is not out of bounds', (t) => {
-  const car = Car();
-  const state = positionShape(car);
-  const actual = isOutOfBounds(state, car);
+  const actual = isOutOfBounds(positionCar(car), car);
   const expected = 0;
 
   t.is(actual, expected);
 });
 
-test('should return 0.5 if half of the shape is out of bounds', (t) => {
+test('should return 1 when the shape is out of bounds', (t) => {
   const car = Car();
-  const state = positionShape(car, [-1, 0]);
-  const actual = isOutOfBounds(state, car);
+  const actual = isOutOfBounds(positionCar(car, [-2, 0]), car);
+  const expected = 1;
+
+  t.is(actual, expected);
+});
+
+test('should return 0.5 when the shape is partially out of bounds', (t) => {
+  const car = Car();
+  const actual = isOutOfBounds(positionCar(car, [-1, 0]), car);
   const expected = 0.5;
 
   t.is(actual, expected);
 });
 
-test('should return 1 if the whole shape is out of bounds', (t) => {
-  const car = Car();
-  const state = positionShape(car, [-2, 0]);
-  const actual = isOutOfBounds(state, car);
-  const expected = 1;
-
-  t.is(actual, expected);
-});
-
-test('should work for too large x too', (t) => {
-  const car = Car();
-  const state = positionShape(car, [bounds.x.max + 1, 0]);
-  const actual = isOutOfBounds(state, car);
-  const expected = 1;
-
-  t.is(actual, expected);
-});
-
-test('should work with different shapes', (t) => {
-  const ship = Ship();
-  const state = positionShape(ship, [-1, 0]);
-  const actual = isOutOfBounds(state, ship);
+test('should return 0.3 when 1/3 of the shape is out of bounds', (t) => {
+  const boat = Boat();
+  const actual = isOutOfBounds(position(getInitialState(), boat, [-1, 0]), boat);
   const expected = 0.3;
+
+  t.is(actual, expected);
+});
+
+test('should return 0 when on the last row', (t) => {
+  const boat = Boat();
+  const actual = isOutOfBounds(position(getInitialState(), boat, [0, bounds.y.max]), boat);
+  const expected = 0;
+
+  t.is(actual, expected);
+});
+
+test('should return 0 when on the last column', (t) => {
+  const boat = Boat();
+  const actual = isOutOfBounds(position(getInitialState(), boat, [bounds.x.max - 2, 0]), boat);
+  const expected = 0;
+
+  t.is(actual, expected);
+});
+
+test('should return 1 if shape is not in the state', (t) => {
+  const boat = Boat();
+  const actual = isOutOfBounds(getInitialState(), boat);
+  const expected = 1;
 
   t.is(actual, expected);
 });

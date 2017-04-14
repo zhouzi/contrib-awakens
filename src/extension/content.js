@@ -1,24 +1,12 @@
-/* global window */
-
 import sample from 'lodash/sample';
-import log from './log';
-import createCarDodge from './games/carDodge';
-import createCrossRoad from './games/crossRoad';
-import createSpaceInvaders from './games/spaceInvaders';
-import { hasGraph } from '../lib/DOM';
+import { isPlayable, setup, onGameOver } from '../lib/DOM';
+import games from './games';
 
-if (hasGraph()) {
-  const games = [
-    createCarDodge,
-    createCrossRoad,
-    createSpaceInvaders,
-  ];
+if (isPlayable()) {
+  setup();
+
   const createGame = sample(games);
 
-  (function startGame() {
-    createGame(() => {
-      log('Game Over!');
-      startGame();
-    });
-  }());
+  onGameOver(createGame);
+  createGame();
 }

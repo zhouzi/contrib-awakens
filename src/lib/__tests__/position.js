@@ -1,135 +1,104 @@
-const test = require('ava');
-const { Car, Ship } = require('./fixtures');
-const getInitialState = require('../index').default;
-const { getShapeMeta } = require('../Shape');
-const position = require('../position').default;
+import _ from 'lodash';
+import test from 'ava';
+import getInitialState, { position } from '../';
+import { Car } from './fixtures';
 
-test('should expose a function', (t) => {
-  const actual = typeof position;
-  const expected = 'function';
+function positionCar(state = getInitialState(), [x, y] = [0, 0], callback = _.identity) {
+  return position(state, Car(), [x, y], callback);
+}
+
+test('should position a shape', (t) => {
+  const state = positionCar();
+  const actual = [
+    state['0.0'].color,
+    state['1.0'].color,
+  ];
+  const expected = [
+    'red',
+    'red',
+  ];
+
+  t.deepEqual(actual, expected);
+});
+
+test('should position a shape somewhere else', (t) => {
+  const state = positionCar(getInitialState(), [2, 0]);
+  const actual = [
+    state['2.0'].color,
+    state['3.0'].color,
+  ];
+  const expected = [
+    'red',
+    'red',
+  ];
+
+  t.deepEqual(actual, expected);
+});
+
+test('should position two cars', (t) => {
+  const state = positionCar(positionCar(), [2, 0]);
+  const actual = [
+    state['0.0'].color,
+    state['1.0'].color,
+    state['2.0'].color,
+    state['3.0'].color,
+  ];
+  const expected = [
+    'red',
+    'red',
+    'red',
+    'red',
+  ];
+
+  t.deepEqual(actual, expected);
+});
+
+test('should call callback when trying to position a shape over another', (t) => {
+  let called;
+  positionCar(positionCar(), [0, 0], () => {
+    called = true;
+  });
+
+  const actual = called;
+  const expected = true;
 
   t.is(actual, expected);
 });
 
-test('should position a shape', (t) => {
-  const car = Car();
-  const { id, name } = getShapeMeta(car);
-  const actual = position(getInitialState(), car, [0, 0]);
-  const expected = {
-    '0.0': {
-      id,
-      name,
-      color: 'red',
-      meta: {},
-    },
-    '1.0': {
-      id,
-      name,
-      color: 'red',
-      meta: {},
-    },
-  };
+test('should call callback with previous state', (t) => {
+  let previousState;
+  const state = positionCar();
+  positionCar(state, [0, 0], (firstArg) => {
+    previousState = firstArg;
+  });
+
+  const actual = previousState;
+  const expected = state;
+
+  t.is(actual, expected);
+});
+
+test('should call callback with the colliding points', (t) => {
+  let collidingPoints;
+  positionCar(positionCar(), [0, 0], (state, secondArg) => {
+    collidingPoints = secondArg;
+  });
+
+  const actual = [
+    collidingPoints[0].name,
+    collidingPoints[0].name,
+  ];
+  const expected = [
+    'car',
+    'car',
+  ];
 
   t.deepEqual(actual, expected);
 });
 
-test('should position a different shape', (t) => {
-  const ship = Ship();
-  const { id, name } = getShapeMeta(ship);
-  const actual = position(getInitialState(), ship, [0, 0]);
-  const expected = {
-    '0.0': {
-      id,
-      name,
-      color: 'red',
-      meta: {},
-    },
-    '1.0': {
-      id,
-      name,
-      color: 'blue',
-      meta: {},
-    },
-    '2.0': {
-      id,
-      name,
-      color: 'red',
-      meta: {},
-    },
-  };
+test('should return the result of callback', (t) => {
+  const actual = positionCar(positionCar(), [0, 0], () => 'hello');
+  const expected = 'hello';
 
-  t.deepEqual(actual, expected);
+  t.is(actual, expected);
 });
-
-test('should position a shape at a different position', (t) => {
-  const car = Car();
-  const { id, name } = getShapeMeta(car);
-  const actual = position(getInitialState(), car, [2, 1]);
-  const expected = {
-    2.1: {
-      id,
-      name,
-      color: 'red',
-      meta: {},
-    },
-    3.1: {
-      id,
-      name,
-      color: 'red',
-      meta: {},
-    },
-  };
-
-  t.deepEqual(actual, expected);
-});
-
-test('should position several shapes', (t) => {
-  const car = Car();
-  const { id: carId, name: carName } = getShapeMeta(car);
-  const ship = Ship();
-  const { id: shipId, name: shipName } = getShapeMeta(ship);
-  const actual = position(position(getInitialState(), car, [0, 0]), ship, [0, 1]);
-  const expected = {
-    '0.0': {
-      id: carId,
-      name: carName,
-      color: 'red',
-      meta: {},
-    },
-    '1.0': {
-      id: carId,
-      name: carName,
-      color: 'red',
-      meta: {},
-    },
-    0.1: {
-      id: shipId,
-      name: shipName,
-      color: 'red',
-      meta: {},
-    },
-    1.1: {
-      id: shipId,
-      name: shipName,
-      color: 'blue',
-      meta: {},
-    },
-    2.1: {
-      id: shipId,
-      name: shipName,
-      color: 'red',
-      meta: {},
-    },
-  };
-
-  t.deepEqual(actual, expected);
-});
-
-test('should throw an error when positioning a shape over an other', (t) => {
-  const car1 = Car();
-  const car2 = Car();
-
-  t.throws(() => position(position(getInitialState(), car1, [0, 0]), car2, [0, 0]));
-});
-
-test.todo('position(position(state, car, [0, 0]), car, [0, 0]) should === state');

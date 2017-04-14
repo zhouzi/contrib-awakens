@@ -1,148 +1,130 @@
-const test = require('ava');
-const { Car, Ship } = require('./fixtures');
-const Shape = require('../Shape').default;
-const { getShapeMeta } = require('../Shape');
+import _ from 'lodash';
+import test from 'ava';
+import { Car, Ship } from './fixtures';
 
-function Plane() {
-  return Shape('plane', [
-    [null, 'red', null],
-    ['red', 'red', 'red'],
-    [null, 'red', null],
-  ]);
-}
-
-test('should expose a function', (t) => {
-  const actual = typeof Shape;
-  const expected = 'function';
-
-  t.is(actual, expected);
-});
-
-test('should throw an error if shape misses a name', (t) => {
-  t.throws(() => Shape([['red']]));
-});
-
-test('should throw an error if shape has no cells', (t) => {
-  t.throws(() => Shape('car', []));
-});
-
-test('should throw an error if shape has only empty cells', (t) => {
-  t.throws(() => Shape('car', [[]]));
-});
-
-test('should create a shape with a name', (t) => {
-  const actual = getShapeMeta(Car()).name;
-  const expected = 'car';
-
-  t.is(actual, expected);
-});
-
-test('should create a shape with a different name', (t) => {
-  const actual = getShapeMeta(Ship()).name;
-  const expected = 'ship';
-
-  t.is(actual, expected);
-});
-
-test('should create a shape with an id', (t) => {
-  const actual = typeof getShapeMeta(Car()).id;
-  const expected = 'string';
-
-  t.is(actual, expected);
-});
-
-test('should generate unique ids', (t) => {
-  const actual = getShapeMeta(Car()).id !== getShapeMeta(Car()).id;
+test('should return an object', (t) => {
+  const actual = _.isPlainObject(Car());
   const expected = true;
 
   t.is(actual, expected);
 });
 
-test('should contain a mapping of the points', (t) => {
+test('should return a shape with two points', (t) => {
+  const actual = _.keys(Car()).length;
+  const expected = 2;
+
+  t.is(actual, expected);
+});
+
+test('should return points with the right position', (t) => {
   const car = Car();
-  const { id, name } = getShapeMeta(car);
-  const actual = car;
-  const expected = {
-    '0.0': {
-      id,
-      name,
-      color: 'red',
-      meta: {},
-    },
-    '1.0': {
-      id,
-      name,
-      color: 'red',
-      meta: {},
-    },
-  };
+  const actual = [
+    car['0.0'].color,
+    car['1.0'].color,
+  ];
+  const expected = [
+    'red',
+    'red',
+  ];
 
   t.deepEqual(actual, expected);
 });
 
-test('should contain a different mapping', (t) => {
+test('should return a different shape', (t) => {
   const ship = Ship();
-  const { id, name } = getShapeMeta(ship);
-  const actual = ship;
-  const expected = {
-    '0.0': {
-      id,
-      name,
-      color: 'red',
-      meta: {},
-    },
-    '1.0': {
-      id,
-      name,
-      color: 'blue',
-      meta: {},
-    },
-    '2.0': {
-      id,
-      name,
-      color: 'red',
-      meta: {},
-    },
-  };
+  const actual = [
+    ship['0.0'].color,
+    ship['1.1'].color,
+    ship['0.2'].color,
+  ];
+  const expected = [
+    'green',
+    'blue',
+    'green',
+  ];
 
   t.deepEqual(actual, expected);
 });
 
-test('should ignore null values', (t) => {
-  const plane = Plane();
-  const { id, name } = getShapeMeta(plane);
-  const actual = plane;
+test('should return a shape with a different name', (t) => {
+  const ship = Ship();
+  const actual = [
+    ship['0.0'].name,
+    ship['1.1'].name,
+    ship['0.2'].name,
+  ];
+  const expected = [
+    'ship',
+    'ship',
+    'ship',
+  ];
+
+  t.deepEqual(actual, expected);
+});
+
+test('should return points with a reference to the shape name', (t) => {
+  const car = Car();
+  const actual = [
+    car['0.0'].name,
+    car['1.0'].name,
+  ];
+  const expected = [
+    'car',
+    'car',
+  ];
+
+  t.deepEqual(actual, expected);
+});
+
+test('should return points with a reference to the shape id', (t) => {
+  const car = Car();
+  const actual = [
+    typeof car['0.0'].id,
+    typeof car['1.0'].id,
+  ];
+  const expected = [
+    'string',
+    'string',
+  ];
+
+  t.deepEqual(actual, expected);
+});
+
+test('should return a shape with each of its points being the same id', (t) => {
+  const car = Car();
+  const actual = car['0.0'].id;
+  const expected = car['1.0'].id;
+
+  t.is(actual, expected);
+});
+
+test('should generate unique ids', (t) => {
+  const car1 = Car();
+  const car2 = Car();
+  const actual = car1['0.0'].id !== car2['0.0'].id;
+  const expected = true;
+
+  t.is(actual, expected);
+});
+
+test('should reference a meta object', (t) => {
+  const actual = _.isPlainObject(Car()['0.0'].meta);
+  const expected = true;
+
+  t.is(actual, expected);
+});
+
+test('should have an empty meta by default', (t) => {
+  const actual = _.keys(Car()['0.0'].meta).length;
+  const expected = 0;
+
+  t.is(actual, expected);
+});
+
+test('should set meta as provided', (t) => {
+  const actual = Car({ foo: 'bar' })['0.0'].meta;
   const expected = {
-    '1.0': {
-      id,
-      name,
-      color: 'red',
-      meta: {},
-    },
-    0.1: {
-      id,
-      name,
-      color: 'red',
-      meta: {},
-    },
-    1.1: {
-      id,
-      name,
-      color: 'red',
-      meta: {},
-    },
-    1.2: {
-      id,
-      name,
-      color: 'red',
-      meta: {},
-    },
-    2.1: {
-      id,
-      name,
-      color: 'red',
-      meta: {},
-    },
+    foo: 'bar',
   };
 
   t.deepEqual(actual, expected);

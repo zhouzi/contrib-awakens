@@ -1,18 +1,27 @@
-const Shape = require('../../Shape').default;
+import { Shape } from '../../';
 
-function Car() {
+export function Car(meta) {
   return Shape('car', [
     ['red', 'red'],
-  ]);
+  ], meta);
 }
 
-function Ship() {
+export function Ship() {
   return Shape('ship', [
-    ['red', 'blue', 'red'],
+    ['green', null],
+    [null, 'blue'],
+    ['green', null],
   ]);
 }
 
-module.exports = {
+export function Boat() {
+  return Shape('boat', [
+    ['blue', 'blue', 'blue'],
+  ]);
+}
+
+export default {
   Car,
   Ship,
+  Boat,
 };

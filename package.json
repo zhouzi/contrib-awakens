@@ -5,14 +5,15 @@
     "test": "ava",
     "lint": "eslint --ext .js --ignore-pattern dist --fix .",
     "dev": "webpack --watch -d",
-    "build": "webpack -p -d"
+    "build": "webpack -p"
   },
   "ava": {
     "require": "babel-register",
     "babel": "inherit"
   },
   "dependencies": {
-    "lodash": "^4.17.4"
+    "lodash": "^4.17.4",
+    "seamless-immutable": "^7.1.2"
   },
   "devDependencies": {
     "ava": "^0.18.2",

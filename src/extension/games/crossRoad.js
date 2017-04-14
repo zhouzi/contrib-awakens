@@ -1,82 +1,33 @@
-/* global window */
-
-import sample from 'lodash/sample';
 import keys from 'lodash/keys';
 import head from 'lodash/head';
-import flatMap from 'lodash/flatMap';
 import range from 'lodash/range';
-import log from '../log';
-import getInitialState, { bounds, directions } from '../../lib';
-import position from '../../lib/position';
-import move from '../../lib/move';
-import isOutOfBounds from '../../lib/isOutOfBounds';
-import { removeOutOfBoundsShape } from '../../lib/removeShape';
-import Shape, { getShapeMeta } from '../../lib/Shape';
-import { reduceLeft, filterShapes } from '../../lib/reduce';
-import getShapes from '../../lib/getShapes';
-import coordKey from '../../lib/coordKey';
-import render from '../../lib/DOM';
-import loop from '../../lib/DOM/loop';
-import onKeyDown, { keyCodes } from '../../lib/DOM/keyboard';
-import clear from '../../lib/DOM/clear';
+import sample from 'lodash/sample';
+import getInitialState, {
+  Shape,
+  position,
+  move,
+  isOutOfBounds,
+  getShapes,
+  getShapeName,
+  getShapeMeta,
+  parseCoord,
+  reduceTop,
+  reduceBottom,
+  removeOutOfBoundsShapes,
+  pipeline,
+  bounds,
+  directions,
+} from '../../lib';
+import throttle from '../../lib/throttle';
+import render, { loop, onKeyDown, keyCodes } from '../../lib/DOM';
 import colors from '../../lib/colors.json';
 
 const character = Shape('character', [
-  [colors.LOW],
+  [colors.LIGHT],
 ]);
 
-const carsColor = [
-  colors.HIGH,
-  colors.VERY_HIGH,
-];
-function createCar() {
-  const color = sample(carsColor);
-  const speed = sample(['slow', 'fast']);
-  const direction = sample(['top', 'bottom']);
-  return Shape('car', [
-    [color],
-    [color],
-  ], {
-    speed,
-    direction,
-  });
-}
-
-function moveCars(state, speed) {
-  return reduceLeft(state, filterShapes(
-    (nextState, shape) => {
-      const direction = getShapeMeta(shape).meta.direction;
-      const coord = directions[direction];
-      return move(nextState, shape, coord, () => null);
-    },
-    (shape) => {
-      const { name, meta } = getShapeMeta(shape);
-      return name === 'car' && meta.speed === speed;
-    },
-  ));
-}
-
-function getRandomAvailableX(state) {
-  const minX = bounds.x.min + 3;
-  const maxX = bounds.x.max - 3;
-  const cars = getShapes(state).filter(shape => getShapeMeta(shape).name === 'car');
-  const takenX = flatMap(cars, car => keys(car).map(coordKey.keyToCoord).map(head));
-  const availableX = range(minX, maxX).filter(x => takenX.indexOf(x) === -1);
-  return sample(availableX);
-}
-
-function spawnCar(state) {
-  const car = createCar();
-  const { direction } = getShapeMeta(car).meta;
-  const x = getRandomAvailableX(state);
-  const y = direction === 'top' ? bounds.y.max : bounds.y.min - 1;
-  return position(state, car, [x, y]);
-}
-
 function moveCharacter(state, direction) {
-  const coord = directions[direction];
-  const nextState = move(state, character, coord, () => null);
-
+  const nextState = move(state, character, direction, () => null);
   if (nextState == null) {
     return null;
   }
@@ -88,50 +39,69 @@ function moveCharacter(state, direction) {
   return state;
 }
 
-export default function (onGameOver) {
-  log(
-    'Press top to move top',
-    'Press right to move right',
-    'Press bottom to move bottom',
-    'Press left to move left',
-  );
+function getRandomEmptyX(state) {
+  const nonEmptyX = getShapes(state)
+    .filter(shape => getShapeName(shape) === 'car')
+    .map(shape => keys(shape).map(coord => head(parseCoord(coord))))
+    .reduce((acc, x) => acc.concat(x), []);
+  const min = bounds.x.min + 3;
+  const max = bounds.x.max - 3;
+  const emptyX = range(min, max).filter(x => nonEmptyX.indexOf(x) === -1);
+  return sample(emptyX);
+}
 
-  let state = position(
-    getInitialState(),
-    character,
-    [bounds.x.min + 1, bounds.y.middle],
-  );
-
-  function gameOver() {
-    clear();
-    onGameOver();
-  }
-
-  loop(() => {
-    if (state == null) {
-      gameOver();
-    } else {
-      state = reduceLeft(state, removeOutOfBoundsShape);
-      render(state);
+function moveCarsReducer(dir) {
+  return (acc, shape) => {
+    const name = getShapeName(shape);
+    const { direction } = getShapeMeta(shape);
+    if (name === 'car' && direction === dir) {
+      return move(acc, shape, directions[dir], () => null);
     }
+
+    return acc;
+  };
+}
+
+function moveCarsWithSpeed(speed) {
+  return state => pipeline([
+    acc => reduceTop(acc, moveCarsReducer('BOTTOM', speed)),
+    acc => reduceBottom(acc, moveCarsReducer('TOP', speed)),
+  ], state);
+}
+
+function spawnCar(state) {
+  const x = getRandomEmptyX(state);
+  const direction = sample(['TOP', 'BOTTOM']);
+  const y = direction === 'BOTTOM' ? bounds.y.min - 1 : bounds.y.max;
+  const color = sample([colors.DARK, colors.DARKER]);
+  const speed = sample(['slow', 'fast']);
+  const car = Shape('car', [
+    [color],
+    [color],
+  ], { direction, speed });
+  return position(state, car, [x, y]);
+}
+
+export default function createCrossRoad() {
+  let state = position(getInitialState(), character, [bounds.x.min + 1, bounds.y.middle]);
+
+  const moveSlowCars = throttle(moveCarsWithSpeed('slow'), 500);
+  const moveFastCars = throttle(moveCarsWithSpeed('fast'), 250);
+  const throttledSpawnCar = throttle(spawnCar, 300);
+  loop(() => {
+    state = pipeline([
+      moveSlowCars,
+      moveFastCars,
+      removeOutOfBoundsShapes,
+      throttledSpawnCar,
+    ], state);
+    render(state);
   });
 
-  loop(() => {
-    state = moveCars(state, 'slow');
-  }, 500);
-
-  loop(() => {
-    state = moveCars(state, 'fast');
-  }, 250);
-
-  loop(() => {
-    state = spawnCar(state);
-  }, 250);
-
   onKeyDown({
-    [keyCodes.TOP]: () => { state = moveCharacter(state, 'top'); },
-    [keyCodes.RIGHT]: () => { state = moveCharacter(state, 'right'); },
-    [keyCodes.BOTTOM]: () => { state = moveCharacter(state, 'bottom'); },
-    [keyCodes.LEFT]: () => { state = moveCharacter(state, 'left'); },
+    [keyCodes.TOP]: () => { state = moveCharacter(state, directions.TOP); },
+    [keyCodes.RIGHT]: () => { state = moveCharacter(state, directions.RIGHT); },
+    [keyCodes.BOTTOM]: () => { state = moveCharacter(state, directions.BOTTOM); },
+    [keyCodes.LEFT]: () => { state = moveCharacter(state, directions.LEFT); },
   });
 }
