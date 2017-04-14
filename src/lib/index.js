@@ -82,19 +82,19 @@ export function getShapeMeta(shape) {
   return head(values(shape)).meta;
 }
 
-export function remove(state, shape) {
-  const id = getShapeId(shape);
+export function removeBy(state, fn) {
   return keys(state).reduce((acc, coord) => {
     const point = state[coord];
-    if (point.id === id) {
-      return acc.without(coord);
-    }
-
-    return acc;
+    return fn(point) ? acc.without(coord) : acc;
   }, state);
 }
 
-function getShape(state, shape) {
+export function remove(state, shape) {
+  const id = getShapeId(shape);
+  return removeBy(state, point => point.id === id);
+}
+
+export function getShape(state, shape) {
   const id = getShapeId(shape);
   return new Immutable(pickBy(state, point => point.id === id));
 }
@@ -147,7 +147,7 @@ export function getShapes(state) {
   return map(shapesMap, identity);
 }
 
-function getShapeBounds(shape) {
+export function getShapeBounds(shape) {
   const coords = keys(shape).map(parseCoord);
   const xs = coords.map(head).sort();
   const ys = coords.map(last).sort();
