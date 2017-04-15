@@ -9,10 +9,10 @@ import getInitialState, {
   reduceLeft,
   getShapeName,
   removeOutOfBoundsShapes,
+  throttle,
   bounds,
   directions,
 } from '../../lib';
-import throttle from '../../lib/throttle';
 import render, { loop, onKeyDown, onKeyUp, keyCodes } from '../../lib/DOM';
 import colors from '../../lib/colors.json';
 

@@ -11,6 +11,7 @@ import map from 'lodash/map';
 import last from 'lodash/last';
 import assign from 'lodash/assign';
 import get from 'lodash/get';
+import random from 'lodash/random';
 
 export function Shape(name, schema, meta = {}) {
   const id = uniqueId(`${name}-`);
@@ -244,6 +245,40 @@ export function pipeline(fns, initialResult, done = identity) {
   }
 
   return done(result);
+}
+
+export function sometimes(fn, min, max) {
+  return (...args) => {
+    if (random(min, max) <= min) {
+      return fn(...args);
+    }
+    return head(args);
+  };
+}
+
+export function throttle(fn, delay, min = delay, max = delay) {
+  let wait = delay;
+  let lastCall = 0;
+
+  function throttled(...args) {
+    const now = Date.now();
+    if (now - lastCall >= wait) {
+      lastCall = now;
+      return fn(...args);
+    }
+
+    return head(args);
+  }
+
+  throttled.decreaseDelay = (decrease) => {
+    wait = Math.max(min, wait - decrease);
+  };
+
+  throttled.increaseDelay = (increase) => {
+    wait = Math.min(max, wait + increase);
+  };
+
+  return throttled;
 }
 
 export default function getInitialState() {

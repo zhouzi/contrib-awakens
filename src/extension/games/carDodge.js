@@ -10,13 +10,13 @@ import getInitialState, {
   getShapeName,
   removeOutOfBoundsShapes,
   pipeline,
+  sometimes,
+  throttle,
   directions,
   bounds,
 } from '../../lib';
-import throttle from '../../lib/throttle';
 import render, { loop, onKeyDown, keyCodes } from '../../lib/DOM';
 import colors from '../../lib/colors.json';
-import sometimes from '../../lib/sometimes';
 
 const car = Shape('car', [
   [colors.LIGHT, colors.LIGHT],

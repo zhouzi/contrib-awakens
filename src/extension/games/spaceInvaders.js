@@ -13,10 +13,10 @@ import getInitialState, {
   pipeline,
   removeBy,
   remove,
+  throttle,
   bounds,
   directions,
 } from '../../lib';
-import throttle from '../../lib/throttle';
 import render, { loop, onKeyDown, keyCodes } from '../../lib/DOM';
 import colors from '../../lib/colors.json';
 
