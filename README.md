@@ -16,7 +16,7 @@ git clone git@github.com:{user}/contrib-awakens.git
 npm install
 ```
 
-*Available scripts*
+**Available scripts**
 
 * `npm run test` runs the tests.
 * `npm run test:dev` runs the tests and watch for changes.
@@ -50,7 +50,7 @@ console.log(state);
 
 Creates a shape object.
 
-*Example*
+**Example**
 
 ```javascript
 import { Shape } from '../../lib';
