@@ -33,7 +33,7 @@ It will give you a good and practical sense of the API.
 
 Returns an empty state which is an immutable object.
 
-*Example*
+**Example**
 
 ```javascript
 import getInitialState from '../../lib';
@@ -93,7 +93,7 @@ By default `onCollision` is set to `identity` which means the previous state is 
 
 Note: you must return `null` when the game is over.
 
-*Example*
+**Example**
 
 ```javascript
 import getInitialState, { Shape, position } from '../../lib';
@@ -141,6 +141,8 @@ By default `onCollision` is set to `identity` which means the previous state is 
 
 Note: you must return `null` when the game is over.
 
+**Example**
+
 ```javascript
 import getInitialState, { Shape, position, move } from '../../lib';
 
@@ -176,6 +178,8 @@ console.log(state);
 
 Remove a shape from state.
 
+**Example**
+
 ```javascript
 import getInitialState, { Shape, position, remove } from '../../lib';
 
@@ -196,6 +200,8 @@ console.log(state);
 ### `removeBy(state: State, predicate: function): State`
 
 Remove every points that `predicate` returns true for.
+
+**Example**
 
 ```javascript
 import getInitialState, { Shape, position, removeBy } from '../../lib';
@@ -218,6 +224,8 @@ console.log(state);
 
 Return the percentage (between 0 and 1) of `shape` that is out of bounds.
 
+**Example**
+
 ```javascript
 import getInitialState, { Shape, position, isOutOfBounds } from '../../lib';
 
@@ -238,6 +246,8 @@ console.log(outOfBounds);
 ### `getShape(state: State, shape: Shape): Shape`
 
 Return the provided shape as it is in state.
+
+**Example**
 
 ```javascript
 import getInitialState, { Shape, position, getShape } from '../../lib';
@@ -272,6 +282,8 @@ console.log(shape);
 ### `getShapes(state: State): Shape[]`
 
 Return an array of all the shapes in state.
+
+**Example**
 
 ```javascript
 import getInitialState, { Shape, position, getShapes } from '../../lib';
@@ -308,6 +320,8 @@ console.log(shapes);
 
 Return a shape's bounds.
 
+**Example**
+
 ```javascript
 import getInitialState, { Shape, position, getShapeBounds } from '../../lib';
 
@@ -339,6 +353,8 @@ The `reducer` function receives two arguments:
 * `shape: Shape` a shape object.
 
 You must return `null` when the game is over and if you do so, `reduceTop` returns early.
+
+**Example**
 
 ```javascript
 import getInitialState, { Shape, position, move, reduceTop } from '../../lib';
@@ -381,6 +397,8 @@ The `reducer` function receives two arguments:
 
 You must return `null` when the game is over and if you do so, `reduceRight` returns early.
 
+**Example**
+
 ```javascript
 import getInitialState, { Shape, position, move, reduceRight } from '../../lib';
 
@@ -421,6 +439,8 @@ The `reducer` function receives two arguments:
 * `shape: Shape` a shape object.
 
 You must return `null` when the game is over and if you do so, `reduceBottom` returns early.
+
+**Example**
 
 ```javascript
 import getInitialState, { Shape, position, move, reduceBottom } from '../../lib';
@@ -463,6 +483,8 @@ The `reducer` function receives two arguments:
 
 You must return `null` when the game is over and if you do so, `reduceLeft` returns early.
 
+**Example**
+
 ```javascript
 import getInitialState, { Shape, position, move, reduceLeft } from '../../lib';
 
@@ -497,6 +519,8 @@ console.log(state);
 
 Return a shape's unique identifier.
 
+**Example**
+
 ```javascript
 import { Shape, getShapeId } from '../../lib';
 
@@ -515,6 +539,8 @@ console.log(id);
 
 Return a shape's name.
 
+**Example**
+
 ```javascript
 import { Shape, getShapeName } from '../../lib';
 
@@ -532,6 +558,8 @@ console.log(name);
 ### `getShapeMeta(shape: Shape): object`
 
 Return a shape's meta.
+
+**Example**
 
 ```javascript
 import { Shape, getShapeMeta } from '../../lib';
@@ -553,6 +581,8 @@ console.log(meta);
 
 Parse a stringified coordinate and returns its `x` and `y`.
 
+**Example**
+
 ```javascript
 import { parseCoord } from '../../lib';
 
@@ -567,6 +597,8 @@ console.log(x, y);
 ### `stringifyCoord([x, y]: [number, number]): string`
 
 Stringify `x` and `y` coordinates.
+
+**Example**
 
 ```javascript
 import { stringifyCoord } from '../../lib';
@@ -583,6 +615,8 @@ console.log(coord);
 
 Works like a reducer, except it returns early when `null` is encountered.
 Especially useful to chain actions but prevent from manipulating a `null` state caused by a game over.
+
+**Example**
 
 ```javascript
 import { pipeline } from '../../lib';
@@ -609,6 +643,8 @@ The return function has itself two useful functions:
 * `decreaseDelay(decrement: number): void` decrement the minimum delay between each call. If the result is inferior to `min`, `min` will be used instead.
 * `increaseDelay(increment: number): void` increment the minimum delay between each call. If the result is superior to `max`, `max` will be used instead.
 
+**Example**
+
 ```javascript
 import { throttle } from '../../lib';
 
@@ -625,6 +661,8 @@ log();
 
 Call `fn` `min` times out of `max`.
 When `fn` is not called, the first argument passed to it is returned.
+
+**Example**
 
 ```javascript
 import { sometimes } from '../../lib';
