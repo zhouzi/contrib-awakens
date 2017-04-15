@@ -101,7 +101,7 @@ function moveEnnemies(state) {
           collidingPoints.some(({ name }) => name === 'player')
             ? null
             : s
-        )
+        ),
       );
     }
 
@@ -115,7 +115,7 @@ export default function createSpaceInvaders() {
     bounds.y.middle - 1,
   ]);
 
-  const moveRocketsAndEnnemies = throttle((acc) => pipeline([
+  const moveRocketsAndEnnemies = throttle(acc => pipeline([
     moveRockets,
     moveEnnemies,
   ], acc), 150);
@@ -130,10 +130,10 @@ export default function createSpaceInvaders() {
 
   const throttledSpawnRocket = throttle(spawnRocket, 800);
   onKeyDown({
-    [keyCodes.TOP]: () => { state = movePlayer(state, directions.TOP ); },
-    [keyCodes.RIGHT]: () => { state = movePlayer(state, directions.RIGHT ); },
-    [keyCodes.BOTTOM]: () => { state = movePlayer(state, directions.BOTTOM ); },
-    [keyCodes.LEFT]: () => { state = movePlayer(state, directions.LEFT ); },
+    [keyCodes.TOP]: () => { state = movePlayer(state, directions.TOP); },
+    [keyCodes.RIGHT]: () => { state = movePlayer(state, directions.RIGHT); },
+    [keyCodes.BOTTOM]: () => { state = movePlayer(state, directions.BOTTOM); },
+    [keyCodes.LEFT]: () => { state = movePlayer(state, directions.LEFT); },
     [keyCodes.SPACEBAR]: () => { state = throttledSpawnRocket(state); },
   });
 }

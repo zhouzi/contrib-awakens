@@ -92,11 +92,9 @@ export default function createHelicopter() {
         speed += 1;
         gravity.decreaseDelay(50);
       }
-    } else {
-      if (speed > minSpeed) {
-        speed -= 1;
-        gravity.increaseDelay(50);
-      }
+    } else if (speed > minSpeed) {
+      speed -= 1;
+      gravity.increaseDelay(50);
     }
 
     const direction = speed > 0 ? directions.TOP : directions.BOTTOM;
