@@ -16,9 +16,9 @@ import getInitialState, {
   throttle,
   bounds,
   directions,
-} from '../../lib';
-import render, { loop, onKeyDown, keyCodes } from '../../lib/DOM';
-import colors from '../../lib/colors.json';
+} from '../lib';
+import render, { loop, onKeyDown, keyCodes } from '../lib/DOM';
+import colors from '../lib/colors.json';
 
 const player = Shape('player', [
   [colors.LIGHT, null],

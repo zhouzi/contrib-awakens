@@ -1,5 +1,5 @@
 import sample from 'lodash/sample';
-import { isPlayable, setup, onGameOver } from '../lib/DOM';
+import { isPlayable, setup, onGameOver } from './lib/DOM';
 import games from './games';
 
 if (isPlayable()) {

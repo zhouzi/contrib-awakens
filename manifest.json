@@ -1,6 +1,6 @@
 {
-  "name": "Contribution Graph Apps",
-  "description": "",
+  "name": "Contrib Awakens",
+  "description": "Games running in GitHub's contribution graph.",
   "version": "0.0.0",
   "manifest_version": 2,
   "content_scripts": [

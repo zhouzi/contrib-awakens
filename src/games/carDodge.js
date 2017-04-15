@@ -14,9 +14,9 @@ import getInitialState, {
   throttle,
   directions,
   bounds,
-} from '../../lib';
-import render, { loop, onKeyDown, keyCodes } from '../../lib/DOM';
-import colors from '../../lib/colors.json';
+} from '../lib';
+import render, { loop, onKeyDown, keyCodes } from '../lib/DOM';
+import colors from '../lib/colors.json';
 
 const car = Shape('car', [
   [colors.LIGHT, colors.LIGHT],
