@@ -23,6 +23,7 @@ npm install
 * `npm run lint` runs the linter and fix the smallest issues.
 * `npm run build` bundle files for production.
 * `npm run dev` bundle files for development and watch for changes.
+* `npm run package` zip files to be published on the store.
 
 ## Documentation
 
