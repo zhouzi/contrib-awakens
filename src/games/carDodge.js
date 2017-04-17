@@ -75,8 +75,8 @@ export default function createCarDodge() {
   });
 
   onKeyDown({
-    [keyCodes.TOP]: () => { state = moveCar(state, directions.TOP); },
-    [keyCodes.BOTTOM]: () => { state = moveCar(state, directions.BOTTOM); },
+    [keyCodes.UP]: () => { state = moveCar(state, directions.TOP); },
+    [keyCodes.DOWN]: () => { state = moveCar(state, directions.BOTTOM); },
     [keyCodes.RIGHT]: () => spawnAndMoveBricks.decreaseDelay(50),
     [keyCodes.LEFT]: () => spawnAndMoveBricks.increaseDelay(50),
   });

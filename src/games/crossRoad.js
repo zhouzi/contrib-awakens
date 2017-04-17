@@ -99,9 +99,9 @@ export default function createCrossRoad() {
   });
 
   onKeyDown({
-    [keyCodes.TOP]: () => { state = moveCharacter(state, directions.TOP); },
+    [keyCodes.UP]: () => { state = moveCharacter(state, directions.TOP); },
     [keyCodes.RIGHT]: () => { state = moveCharacter(state, directions.RIGHT); },
-    [keyCodes.BOTTOM]: () => { state = moveCharacter(state, directions.BOTTOM); },
+    [keyCodes.DOWN]: () => { state = moveCharacter(state, directions.BOTTOM); },
     [keyCodes.LEFT]: () => { state = moveCharacter(state, directions.LEFT); },
   });
 }

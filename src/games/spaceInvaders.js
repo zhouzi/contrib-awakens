@@ -130,9 +130,9 @@ export default function createSpaceInvaders() {
 
   const throttledSpawnRocket = throttle(spawnRocket, 800);
   onKeyDown({
-    [keyCodes.TOP]: () => { state = movePlayer(state, directions.TOP); },
+    [keyCodes.UP]: () => { state = movePlayer(state, directions.TOP); },
     [keyCodes.RIGHT]: () => { state = movePlayer(state, directions.RIGHT); },
-    [keyCodes.BOTTOM]: () => { state = movePlayer(state, directions.BOTTOM); },
+    [keyCodes.DOWN]: () => { state = movePlayer(state, directions.BOTTOM); },
     [keyCodes.LEFT]: () => { state = movePlayer(state, directions.LEFT); },
     [keyCodes.SPACEBAR]: () => { state = throttledSpawnRocket(state); },
   });
