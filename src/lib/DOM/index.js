@@ -9,7 +9,7 @@ import noop from 'lodash/noop';
 import { bounds, stringifyCoord } from '../';
 import colors from '../colors.json';
 
-function getGraph() {
+export function getGraph() {
   return window.document.querySelector('.js-calendar-graph-svg');
 }
 

@@ -1,7 +1,23 @@
+import { animated, flash } from 'animate.css';
 import sample from 'lodash/sample';
 import keys from 'lodash/keys';
-import { isPlayable, setup, onGameOver } from './lib/DOM';
+import { isPlayable, setup, onGameOver, getGraph } from './lib/DOM';
 import games from './games';
+
+function gameOverAnimation(callback) {
+  const graph = getGraph();
+
+  function onAnimationEnd() {
+    graph.removeEventListener('animationend', onAnimationEnd);
+    graph.classList.remove(animated);
+    graph.classList.remove(flash);
+    callback();
+  }
+
+  graph.addEventListener('animationend', onAnimationEnd);
+  graph.classList.add(animated);
+  graph.classList.add(flash);
+}
 
 if (isPlayable()) {
   setup();
@@ -11,6 +27,6 @@ if (isPlayable()) {
     console.info(`${key}: ${createGame.controls[key]}`);// eslint-disable-line no-console
   });
 
-  onGameOver(createGame);
+  onGameOver(gameOverAnimation.bind(null, createGame));
   createGame();
 }
