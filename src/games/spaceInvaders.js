@@ -137,3 +137,11 @@ export default function createSpaceInvaders() {
     [keyCodes.SPACEBAR]: () => { state = throttledSpawnRocket(state); },
   });
 }
+
+createSpaceInvaders.controls = {
+  up: 'move up',
+  right: 'move right',
+  bottom: 'move bottom',
+  left: 'move left',
+  spacebar: 'fire',
+};

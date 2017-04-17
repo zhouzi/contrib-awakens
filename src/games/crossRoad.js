@@ -105,3 +105,10 @@ export default function createCrossRoad() {
     [keyCodes.LEFT]: () => { state = moveCharacter(state, directions.LEFT); },
   });
 }
+
+createCrossRoad.controls = {
+  up: 'move up',
+  right: 'move right',
+  bottom: 'move bottom',
+  left: 'move left',
+};

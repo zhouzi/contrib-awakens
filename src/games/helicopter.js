@@ -110,3 +110,9 @@ export default function createHelicopter() {
     [keyCodes.LEFT]: () => spawnAndMoveBricks.increaseDelay(50),
   });
 }
+
+createHelicopter.controls = {
+  spacebar: 'move up',
+  right: 'accelerate',
+  left: 'decelerate',
+};

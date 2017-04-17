@@ -81,3 +81,10 @@ export default function createCarDodge() {
     [keyCodes.LEFT]: () => spawnAndMoveBricks.increaseDelay(50),
   });
 }
+
+createCarDodge.controls = {
+  up: 'move up',
+  bottom: 'move bottom',
+  right: 'accelerate',
+  left: 'decelerate',
+};
