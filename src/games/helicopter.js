@@ -1,4 +1,4 @@
-import random from 'lodash/random';
+import sample from 'lodash/sample';
 import times from 'lodash/times';
 import getInitialState, {
   Shape,
@@ -13,7 +13,7 @@ import getInitialState, {
   bounds,
   directions,
 } from '../lib';
-import render, { loop, onKeyDown, onKeyUp, keyCodes } from '../lib/DOM';
+import render, { loop, onKeyDown, keyCodes } from '../lib/DOM';
 import colors from '../lib/colors.json';
 
 const helicopter = Shape('helicopter', [
@@ -40,7 +40,7 @@ function createBrick(height, color) {
 function spawnBrick(state) {
   return pipeline([
     (acc) => {
-      const topBrickHeight = random(0, 1);
+      const topBrickHeight = sample([0, 0, 1, 1, 2]);
 
       if (topBrickHeight === 0) {
         return acc;
@@ -50,7 +50,7 @@ function spawnBrick(state) {
       return position(acc, topBrick, [bounds.x.max, bounds.y.min], () => null);
     },
     (acc) => {
-      const bottomBrickHeight = random(1, 2);
+      const bottomBrickHeight = sample([1, 1, 2, 2, 2, 4]);
       const bottomBrick = createBrick(bottomBrickHeight, colors.DARKER);
       return position(acc, bottomBrick, [
         bounds.x.max,
@@ -81,29 +81,20 @@ export default function createHelicopter() {
     spawnBrick,
   ], acc), 400, 100, 800);
 
-  const maxSpeed = 2;
-  const minSpeed = 0;
-  let speed = minSpeed;
-  let isAccelerating = false;
-
-  const gravity = throttle((acc) => {
-    if (isAccelerating) {
-      if (speed < maxSpeed) {
-        speed += 1;
-        gravity.decreaseDelay(50);
-      }
-    } else if (speed > minSpeed) {
-      speed -= 1;
-      gravity.increaseDelay(50);
+  let velocity = 0;
+  const rise = throttle(acc => moveHelicopter(acc, directions.TOP), 150);
+  const fall = throttle((acc) => {
+    if (velocity > 0) {
+      velocity = 0;
+      return acc;
     }
 
-    const direction = speed > 0 ? directions.TOP : directions.BOTTOM;
-    return moveHelicopter(acc, direction);
-  }, 300, 200, 300);
+    return moveHelicopter(acc, directions.BOTTOM);
+  }, 500);
 
   loop(() => {
     state = pipeline([
-      gravity,
+      fall,
       removeOutOfBoundsShapes,
       spawnAndMoveBricks,
     ], state);
@@ -111,12 +102,11 @@ export default function createHelicopter() {
   });
 
   onKeyDown({
-    [keyCodes.SPACEBAR]: () => { isAccelerating = true; },
+    [keyCodes.SPACEBAR]: () => {
+      velocity = 1;
+      state = rise(state);
+    },
     [keyCodes.RIGHT]: () => spawnAndMoveBricks.decreaseDelay(50),
     [keyCodes.LEFT]: () => spawnAndMoveBricks.increaseDelay(50),
-  });
-
-  onKeyUp({
-    [keyCodes.SPACEBAR]: () => { isAccelerating = false; },
   });
 }
