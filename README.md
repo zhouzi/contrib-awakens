@@ -2,9 +2,17 @@
 
 Play games in GitHub's contribution graph.
 
+![recording of contrib-awakens](recording.gif)
+
 * [Play]()
+* [How it Works](#how-it-works)
 * [Install](#install)
 * [Documentation](#documentation)
+
+## How it Works
+
+contrib-awakens uses GitHub's contribution graph as a game's rendering layer.
+Once the [browser extension]() is installed, you'll get to play a random game every time you load a profile page.
 
 ## Install
 
