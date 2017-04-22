@@ -3,6 +3,11 @@
   "description": "Play games in GitHub's contribution graph.",
   "version": "0.1.0",
   "manifest_version": 2,
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
   "content_scripts": [
     {
       "matches": [

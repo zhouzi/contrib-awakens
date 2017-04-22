@@ -6,7 +6,7 @@
     "lint": "eslint --ext .js --ignore-pattern dist --fix .",
     "dev": "webpack --watch -d",
     "build": "webpack -p",
-    "package": "bestzip extension.zip manifest.json dist/"
+    "package": "bestzip extension.zip manifest.json icon16.png icon40.png icon48.png icon128.png dist/"
   },
   "ava": {
     "require": "babel-register",
