@@ -2,9 +2,6 @@
 
 Play games in GitHub's contribution graph.
 
-> Brace yourselves, the little squares are coming.
-> They've been silent for long but are now awake, hungry and up for some games!
-
 * [Play]()
 * [Install](#install)
 * [Documentation](#documentation)
